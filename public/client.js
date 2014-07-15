@@ -1,6 +1,57 @@
 var socket = io();
 var nick = '';
 var users = 0;
+var oldestMessageID = 0;
+
+
+socket.on('newConnection', function (data) { users = data.users });
+socket.on('recentMessages', function (data) {
+    oldestMessageID += data.lastTwenty.length;
+    prependMessages(data.lastTwenty);
+});
+
+socket.on('message', function (data) {
+    if (data.type == 'chat') {
+        if (data.nick == nick) 
+            $('#chats').append('<div class="me"><div>' + data.message + '</div></div>');
+        else
+            $('#chats').append('<div class="others"><div>' + data.message + ' - ' + '<strong>' + data.nick + '</strong></div></div>');
+    }
+    else if (data.type == "notice") {
+        $('#chats').append($('<div>').html('<div class="notice">' + data.message));
+    }
+    else if (data.type == "tell" && data.to == nick) {
+        $('#chats').append($('<li>').text(data.message));
+    }
+    else if (data.type == "emote") {
+        $('#chats').append($('<li>').text(data.message));
+    }
+    scrollToBottom();
+});
+
+
+socket.on('getMessages', function (data) {
+    var allmess = data.messages;
+    debugger;
+});
+
+$(document).ready(function () {
+    $('#username').bind('keypress', function (e) {
+        if (e.keyCode == 13) {
+            event.preventDefault();
+            sendUser();
+        }
+    });
+    $('#m').bind('keypress', function (e) {
+        if (e.keyCode == 13) {
+            event.preventDefault();
+            sendMsg();
+        }
+    });
+
+    openModal();
+    $('#username').focus();
+});
 
 function sendUser () {
     nick = $('#username').val();
@@ -19,12 +70,6 @@ function sendUser () {
 }
 
 function sendMsg(event) {
-    if (nick == '') {
-        nick = 'User ' + users;
-        var msg = nick + " has joined the chat";
-        socket.emit('send', { type: 'notice', message: msg });
-    }
-
     var line = $('#m').val();
     if ((jQuery.trim(line)).length == 0)
         return false;
@@ -62,47 +107,46 @@ function chat_command(cmd, arg) {
 
         default:
             console_out("That is not a valid command.");
-
     }
 }
 
-socket.on('newConnection', function (data) { users = data.users });
-
-socket.on('message', function (data) {
-    var leader;
-    if (data.type == 'chat') {
-        if(data.nick == nick)
-            $('#chats').append('<div class="me"><div>' + data.message + '</div></div>');
-        else
-            $('#chats').append('<div class="others"><div>' + data.message + ' - ' + '<strong>' + data.nick + '</strong></div></div>');
+function prependMessages(messages) {
+    if (!$(".loadButton")[0]) {
+        $('#chats').prepend('<div class="loadButton">^ Load More ^</div>');
+        $(".loadButton").click(function () { loadMoreMessages(); });
     }
-    else if (data.type == "notice") {
-        $('#chats').append($('<div>').html('<div class="notice">' + data.message));
+    if (messages.length == 0) {
+        $('.loadButton').html('<div class="loadButton">No Previous Messages To Load</div>');
+        $('.loadButton').addClass("unavailable");
+        $(".loadButton").unbind("click");
     }
-    else if (data.type == "tell" && data.to == nick) {
-        $('#chats').append($('<li>').text(data.message));
+    else {
+        $(".loadButton").remove();
+        for (var i = 0; i < messages.length; i++) {
+            var message = messages[i];
+            if (message.type == 'chat') {
+                if (message.nick == nick)
+                    $('#chats').prepend('<div class="me"><div>' + message.message + '</div></div>');
+                else
+                    $('#chats').prepend('<div class="others"><div>' + message.message + ' - ' + '<strong>' + message.nick + '</strong></div></div>');
+            }
+            else if (message.type == "notice") {
+                $('#chats').prepend($('<div>').html('<div class="notice">' + message.message));
+            }
+        }
+        scrollToBottom();
+        $('#chats').prepend('<div class="loadButton">^ Load More ^</div>');
+        $(".loadButton").click(function () { loadMoreMessages(); });
     }
-    else if (data.type == "emote") {
-        $('#chats').append($('<li>').text(data.message));
-    }
-    scrollToBottom();
-});
+}
 
-
-$(document).ready(function () {
-    $('#username').bind('keypress', function (e) {
-        if (e.keyCode == 13) { sendUser(); }
-    });
-    $('#m').bind('keypress', function (e) {
-        if (e.keyCode == 13) { sendMsg(); }
-    });
-
-    openModal();
-    $('#username').focus();
-});
+function loadMoreMessages() {
+    // get 20 more messages starting with the one older than the top message
+    socket.emit('loadMore', { start: oldestMessageID + 1 });
+}
 
 function scrollToBottom() {
-    $("html, body").animate({ scrollTop: $(document).height() - $(window).height() }, 1000);
+    $("html, body").animate({ scrollTop: $(document).height() - $(window).height() }, 500);
 }
 
 function openModal() {

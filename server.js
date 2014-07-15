@@ -12,18 +12,27 @@ app.get('/', function (req, res) {
 });
 
 console.log("Started");
+var messages = [];
+var notices = [];
+var messageIndex = 0;
 
 io.sockets.on('connection', function (socket) {
     console.log("User Connected");
     currentConnections++;
 
+    socket.emit('recentMessages', { lastTwenty: lastTwentyMessages(0) });
+
     socket.on('send', function (data) {
+        messages.push(data);
         io.sockets.emit('message', data);
-        console.log("Message Sent");
+    });
+
+    socket.on('requestMessages', function (data) {
+        io.sockets.emit('getMessages', { messages: messages });
     });
 
     socket.on('disconnect', function () { currentConnections--; });
-
+    socket.on('loadMore', function (data) { socket.emit('recentMessages', { lastTwenty: lastTwentyMessages(data.start) }); });
     io.sockets.emit('newConnection', { users: currentConnections });
 });
 
@@ -32,3 +41,20 @@ console.log("Running");
 http.listen(3000, function () {
     console.log('listening on *:3000');
 });
+
+function lastTwentyMessages(start) {
+    
+    var result = [];
+    var prev;
+    var x = 0;
+    for (x = start; x <= 20; x++) {
+        prev = messages[messages.length - x - 1];
+        if (prev == null)
+            break;
+        else
+            result.push(prev);
+    }
+    messageIndex = messages.length - x - 1;
+    console.log("Start = " + start + ", messages.length = " + messages.length+", messageIndex = " +messageIndex+ ", result.length = " + result.length);
+    return result;
+}
