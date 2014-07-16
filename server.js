@@ -20,7 +20,8 @@ io.sockets.on('connection', function (socket) {
     console.log("User Connected");
     currentConnections++;
 
-    socket.emit('recentMessages', { lastTwenty: lastTwentyMessages(0) });
+    var initialMessages = lastTwentyMessages(0);
+    socket.emit('recentMessages', { lastTwenty: initialMessages.twenty, sentAll: initialMessages.sentAllMessages });
 
     socket.on('send', function (data) {
         messages.push(data);
@@ -32,7 +33,13 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('disconnect', function () { currentConnections--; });
-    socket.on('loadMore', function (data) { socket.emit('recentMessages', { lastTwenty: lastTwentyMessages(data.start) }); });
+    socket.on('loadMore', function (data) {
+        var loadedMessages = lastTwentyMessages(data.start);
+        socket.emit('recentMessages', {
+            lastTwenty: loadedMessages.twenty,
+            sentAll: loadedMessages.sentAllMessages
+        });
+    });
     io.sockets.emit('newConnection', { users: currentConnections });
 });
 
@@ -43,7 +50,6 @@ http.listen(3000, function () {
 });
 
 function lastTwentyMessages(start) {
-    
     var result = [];
     var prev;
     var x = start;
@@ -56,5 +62,8 @@ function lastTwentyMessages(start) {
     }
     messageIndex = messages.length - x - 1;
     console.log("Start = " + start + ", messages.length = " + messages.length+", messageIndex = " +messageIndex+ ", result.length = " + result.length);
-    return result;
+    return {
+        twenty: result,
+        sentAllMessages: (messageIndex == -1)
+    };
 }

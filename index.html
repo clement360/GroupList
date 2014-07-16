@@ -12,8 +12,24 @@
     <script src="client.js"></script>
 </head>
 <body>
-    <ul id="chats"></ul>
+    <div class="header">
+        <div class="container">
+            <a  href="localhost:3000" class="headerLogo">
+                <span class="ui-icon-comment"></span>
+            </a>
+            <a class="usersOnline">
+                <span class="online"></span>
+            </a>
+            <ul class="UserNav">
+                <li class="username"></li>
+                <li class="options dropdown-toggle"></li>
+                <li><button type="button" onclick="deleteServerLog();">Delete Messages on Server</button></li>
+            </ul>
+        </div>
+    </div>
 
+    <!-- Chat messages go here -->
+    <ul id="chats"></ul>
     <footer>
         <div id="">
             <textarea id="m" placeholder="Write something.."></textarea>
