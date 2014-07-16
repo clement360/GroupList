@@ -7,7 +7,7 @@ var oldestMessageID = 0;
 socket.on('newConnection', function (data) { users = data.users });
 socket.on('recentMessages', function (data) {
     oldestMessageID += data.lastTwenty.length;
-    prependMessages(data.lastTwenty);
+    (oldestMessageID > 21) ? prependMessages(data.lastTwenty, false) : prependMessages(data.lastTwenty, true);
 });
 
 socket.on('message', function (data) {
@@ -110,7 +110,7 @@ function chat_command(cmd, arg) {
     }
 }
 
-function prependMessages(messages) {
+function prependMessages(messages, scrollDown) {
     if (!$(".loadButton")[0]) {
         $('#chats').prepend('<div class="loadButton">^ Load More ^</div>');
         $(".loadButton").click(function () { loadMoreMessages(); });
@@ -134,7 +134,10 @@ function prependMessages(messages) {
                 $('#chats').prepend($('<div>').html('<div class="notice">' + message.message));
             }
         }
-        scrollToBottom();
+        if(scrollDown)
+            scrollToBottom();
+        else
+            scrollToTop();
         $('#chats').prepend('<div class="loadButton">^ Load More ^</div>');
         $(".loadButton").click(function () { loadMoreMessages(); });
     }
@@ -147,6 +150,10 @@ function loadMoreMessages() {
 
 function scrollToBottom() {
     $("html, body").animate({ scrollTop: $(document).height() - $(window).height() }, 500);
+}
+
+function scrollToTop() {
+    $("html, body").animate({ scrollTop: 0 }, 1000);
 }
 
 function openModal() {

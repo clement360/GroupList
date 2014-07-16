@@ -46,8 +46,8 @@ function lastTwentyMessages(start) {
     
     var result = [];
     var prev;
-    var x = 0;
-    for (x = start; x <= 20; x++) {
+    var x = start;
+    for (; x <= start + 20; x++) {
         prev = messages[messages.length - x - 1];
         if (prev == null)
             break;
