@@ -12,7 +12,6 @@ body {
 }
 
 .container{
-    width:980px;
     margin-right:auto;
     margin-left:auto;
 }
@@ -22,15 +21,34 @@ body {
     background-repeat: repeat-x;
     text-shadow: 0 1px 0 #fff;
     border-bottom: 1px solid #e5e5e5;
-    min-width: 1000px;
 }
 
 .ui-icon-comment{
-    float: left;
-    width: 24px;
-    height: 25px;
-    font-size: 25px;
-    background-image: url("comment.png");
+  width: 30px;
+  height: 30px;
+  background-color: #333;
+
+  -webkit-animation: rotateplane 1.2s infinite ease-in-out;
+  animation: rotateplane 1.2s infinite ease-in-out;
+}
+
+@-webkit-keyframes rotateplane {
+  0% { -webkit-transform: perspective(120px) }
+  50% { -webkit-transform: perspective(120px) rotateY(180deg) }
+  100% { -webkit-transform: perspective(120px) rotateY(180deg)  rotateX(180deg) }
+}
+
+@keyframes rotateplane {
+  0% { 
+    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg) 
+  } 50% { 
+    transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg) 
+  } 100% { 
+    transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+    -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+  }
 }
 
 .headerLogo{
@@ -66,25 +84,21 @@ body {
     background-color: #cccccc;
     background-image: -moz-linear-gradient(#aaa, #ccc);
     background-image: -webkit-linear-gradient(#aaa, #ccc);
-    /* background-image: linear-gradient(#aaa, #ccc); */
     background-repeat: repeat-x;
     box-shadow: inset 0 1px 0 rgba(0,0,0,0.1),0 1px 0 #fff;
 }
 
 .userNav{
-    position: absolute;
-    top: 0;
-    left: 230px;
-    z-index: 99;
-    width: 211px;
-    transition: opacity 0.2s linear;
-    -webkit-transition: opacity 0.2s linear 0;
-    opacity: 1;
-    z-index: 1;
+    overflow: hidden;
+    list-style: none;
 }
 
 .userNav > li {
     float: left;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #333333;
 }
 
 #chatForm {
