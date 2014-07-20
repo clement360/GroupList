@@ -3,8 +3,6 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var currentConnections = 0;
-
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', function (req, res) {
@@ -12,27 +10,40 @@ app.get('/', function (req, res) {
 });
 
 console.log("Started");
+
+var users = [];
+var userID = 0;
 var messages = [];
 var notices = [];
 var messageIndex = 0;
 
 io.sockets.on('connection', function (socket) {
     console.log("User Connected");
-    currentConnections++;
-
+    userID++;
+    socket.userID = userID;
+    socket.username = "[placeHolder]";
+    users[userID] = socket;
     var initialMessages = lastTwentyMessages(0);
     socket.emit('recentMessages', { lastTwenty: initialMessages.twenty, sentAll: initialMessages.sentAllMessages });
 
     socket.on('send', function (data) {
+        console.log("\nSocketID: " + socket.userID);
+        if(data.type == 'notice'){
+            for(s in users){
+                if(s.userID == this.userID)
+                    s.username = data.hasOwnProperty('newNick')? data.newNick : data.nick;
+            }
+        }
+                
         messages.push(data);
         io.sockets.emit('message', data);
     });
 
-    socket.on('requestMessages', function (data) {
-        io.sockets.emit('getMessages', { messages: messages });
+    socket.on('disconnect', function () { 
+        io.sockets.emit('message', { type: 'notice', message: this.username + " has left the chat" });
+        messages.push({ type: 'notice', message: this.username + " has left the chat" });
+        users.splice(this.userID, 1);
     });
-
-    socket.on('disconnect', function () { currentConnections--; });
     socket.on('loadMore', function (data) {
         var loadedMessages = lastTwentyMessages(data.start);
         socket.emit('recentMessages', {
@@ -40,7 +51,7 @@ io.sockets.on('connection', function (socket) {
             sentAll: loadedMessages.sentAllMessages
         });
     });
-    io.sockets.emit('newConnection', { users: currentConnections });
+    io.sockets.emit('newConnection', { users: users.length });
 });
 
 console.log("Running");

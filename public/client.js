@@ -29,12 +29,6 @@ socket.on('message', function (data) {
     scrollToBottom();
 });
 
-
-socket.on('getMessages', function (data) {
-    var allmess = data.messages;
-    debugger;
-});
-
 $(document).ready(function () {
     $('#username').bind('keypress', function (e) {
         if (e.keyCode == 13) {
@@ -62,7 +56,7 @@ function sendUser () {
     }
     else {
         var msg = nick + " has joined the chat";
-        socket.emit('send', { type: 'notice', message: msg });
+        socket.emit('send', { type: 'notice', message: msg, username: nick });
         $.modal.close();
         $('#username').val('');
     }
@@ -91,7 +85,7 @@ function chat_command(cmd, arg) {
         case 'nick':
             var notice = nick + " changed their name to " + arg;
             nick = arg;
-            socket.emit('send', { type: 'notice', message: notice });
+            socket.emit('send', { type: 'notice', message: notice, nick: nick, newNick: arg });
             break;
 
         case 'msg':
