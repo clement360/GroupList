@@ -15,15 +15,15 @@
     <div class="header">
         <div class="container">
             <a  href="localhost:3000" class="headerLogo">
-                <div clac ss="ui-icon-comment"></div>
+                <div class="logo"></div>
             </a>
             <a class="usersOnline">
                 <span class="online"></span>
+                <span>Online Users</span>
             </a>
             <ul class="userNav">
-                <li class="username">UserName</li>
-                <li class="options dropdown-toggle">Online Users</li>
-                <li><button type="button" onclick="deleteServerLog();">Delete Messages on Server</button></li>
+                <li class="username"></li>
+                <li id="clearLog"><button type="button" onclick="deleteServerLog();">Reset Server</button></li>
             </ul>
         </div>
     </div>

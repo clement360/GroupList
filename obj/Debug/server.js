@@ -14,7 +14,6 @@ console.log("Started");
 var users = [];
 var userID = 0;
 var messages = [];
-var notices = [];
 var messageIndex = 0;
 
 io.sockets.on('connection', function (socket) {
@@ -40,6 +39,14 @@ io.sockets.on('connection', function (socket) {
         io.sockets.emit('message', { type: 'notice', message: this.username + " has left the chat" });
         messages.push({ type: 'notice', message: this.username + " has left the chat" });
         users.splice(userIndex(this.userID), 1);
+    });
+    
+    socket.on('reset', function () {
+        io.sockets.emit('reset');
+        messages.length = 0;
+        users.length = 0;            ;
+        var userID = 0;
+        var messageIndex = 0;
     });
 
     socket.on('loadMore', function (data) {

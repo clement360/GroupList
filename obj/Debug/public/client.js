@@ -1,10 +1,18 @@
 var socket = io();
 var nick = '';
-var users = 0;
+var connected = 0;
 var oldestMessageID = 0;
 
 
-socket.on('newConnection', function (data) { users = data.users });
+socket.on('reset', function (data) {
+    location.reload();
+});
+
+socket.on('newConnection', function (data) {
+    connected = data.users;
+    $('.online').text(connected);
+});
+
 socket.on('recentMessages', function (data) {
     oldestMessageID += data.lastTwenty.length;
     (oldestMessageID > 21) ? prependMessages(data.lastTwenty, false, data.sentAll) : prependMessages(data.lastTwenty, true, data.sentAll);
@@ -55,6 +63,7 @@ function sendUser () {
           { times: 1 }, 'fast');
     }
     else {
+        $('.username').text(nick);
         var msg = nick + " has joined the chat";
         socket.emit('send', { type: 'notice', message: msg, username: nick });
         $.modal.close();
@@ -215,4 +224,8 @@ function openModal() {
         onOpen: OSX.open,
         onClose: OSX.close
     });
+}
+
+function deleteServerLog() {
+    socket.emit('reset');
 }

@@ -1,10 +1,46 @@
 var socket = io();
 var nick = '';
-var users = 0;
+var connected = 0;
 var oldestMessageID = 0;
+var timer = null;
 
 
-socket.on('newConnection', function (data) { users = data.users });
+
+$(document).ready(function () {
+    $('#username').bind('keypress', function (e) {
+        if (e.keyCode == 13) {
+            event.preventDefault();
+            sendUser();
+        }
+    });
+    $('#m').bind('keypress', function (e) {
+        if (e.keyCode == 13) {
+            event.preventDefault();
+            sendMsg();
+        }
+    });
+
+    $("#search").keydown(function () { 
+        clearTimeout(timer);
+        timer = setTimeout(searchSoundCloud , 1000)
+    });
+
+    openModal();
+    $('#username').focus();
+});
+
+
+
+SC.initialize({
+    client_id: "YOUR_CLIENT_ID",
+    redirect_uri: "http://example.com/callback.html",
+});
+
+socket.on('newConnection', function (data) {
+    connected = data.users;
+    $('.online').text(connected);
+});
+
 socket.on('recentMessages', function (data) {
     oldestMessageID += data.lastTwenty.length;
     (oldestMessageID > 21) ? prependMessages(data.lastTwenty, false, data.sentAll) : prependMessages(data.lastTwenty, true, data.sentAll);
@@ -29,23 +65,9 @@ socket.on('message', function (data) {
     scrollToBottom();
 });
 
-$(document).ready(function () {
-    $('#username').bind('keypress', function (e) {
-        if (e.keyCode == 13) {
-            event.preventDefault();
-            sendUser();
-        }
-    });
-    $('#m').bind('keypress', function (e) {
-        if (e.keyCode == 13) {
-            event.preventDefault();
-            sendMsg();
-        }
-    });
-
-    openModal();
-    $('#username').focus();
-});
+// ----------------------------------------------------------------------------------
+// -                               Chat Functions                                   -
+// ----------------------------------------------------------------------------------
 
 function sendUser () {
     nick = $('#username').val();
@@ -55,6 +77,7 @@ function sendUser () {
           { times: 1 }, 'fast');
     }
     else {
+        $('.username').text(nick);
         var msg = nick + " has joined the chat";
         socket.emit('send', { type: 'notice', message: msg, username: nick });
         $.modal.close();
@@ -215,4 +238,29 @@ function openModal() {
         onOpen: OSX.open,
         onClose: OSX.close
     });
+}
+
+function deleteServerLog() {
+    socket.emit('reset');
+    $('#chats').html('');
+}
+
+// ----------------------------------------------------------------------------------
+// -                                  SoundCloud                                    -
+// ----------------------------------------------------------------------------------
+
+function play() {
+    SC.stream("/tracks/293", function (sound) {
+        sound.play();
+    });
+}
+
+function searchSoundCloud() {
+    query = $('#search').val();
+    
+    if(query.length > 2)
+        SC.get('/tracks', { q: query }, function (tracks) {
+            for (i in tracks)
+                console.log(":: " + tracks[i].title);
+        });
 }

@@ -9,7 +9,6 @@ C:\Users\mclement\Source\Repos\GroupList\obj\Debug\package.json
 C:\Users\mclement\Source\Repos\GroupList\obj\Debug\README.md
 C:\Users\mclement\Source\Repos\GroupList\obj\Debug\public\osx.css
 C:\Users\mclement\Source\Repos\GroupList\obj\Debug\public\styles.css
-C:\Users\mclement\Source\Repos\GroupList\obj\Debug\public\comment.png
 C:\Users\mclement\Source\Repos\GroupList\obj\Debug\public\knit.png
 C:\Users\mclement\Source\Repos\GroupList\obj\Debug\public\wall.png
 C:\Users\mclement\Source\Repos\GroupList\obj\Debug\node_modules\express\.npmignore
