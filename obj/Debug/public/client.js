@@ -2,16 +2,58 @@ var socket = io();
 var nick = '';
 var connected = 0;
 var oldestMessageID = 0;
+var timer = null;
 
+$(document).ready(function () {
+    $('#username').bind('keypress', function (e) {
+        if (e.keyCode == 13) {
+            event.preventDefault();
+            sendUser();
+        }
+    });
+    $('#m').bind('keypress', function (e) {
+        if (e.keyCode == 13) {
+            event.preventDefault();
+            sendMsg();
+        }
+    });
 
-socket.on('reset', function (data) {
-    location.reload();
+    $("#search").keydown(function () { 
+        clearTimeout(timer);
+        timer = setTimeout(searchSoundCloud , 1000)
+    });
+    
+    $('#search').keydown(function (e) {
+        if (e.keyCode == 13) {
+            event.preventDefault();
+            searchSoundCloud();
+        }
+    });
+    
+    var $Controls = $('#right, #left');
+    $Controls.mouseenter(function () {
+        $(this).css("opacity", ".5");
+    });
+    $Controls.mouseleave(function () {
+        $(this).css("opacity", ".05");
+    });
+
+    openModal();
+    $('.carousel').carousel({
+        interval: false
+    });
+    $('#username').focus();
 });
+
 
 socket.on('newConnection', function (data) {
     connected = data.users;
     $('.online').text(connected);
 });
+
+// ----------------------------------------------------------------------------------
+// -                               Chat Functions                                   -
+// ----------------------------------------------------------------------------------
 
 socket.on('recentMessages', function (data) {
     oldestMessageID += data.lastTwenty.length;
@@ -37,23 +79,6 @@ socket.on('message', function (data) {
     scrollToBottom();
 });
 
-$(document).ready(function () {
-    $('#username').bind('keypress', function (e) {
-        if (e.keyCode == 13) {
-            event.preventDefault();
-            sendUser();
-        }
-    });
-    $('#m').bind('keypress', function (e) {
-        if (e.keyCode == 13) {
-            event.preventDefault();
-            sendMsg();
-        }
-    });
-
-    openModal();
-    $('#username').focus();
-});
 
 function sendUser () {
     nick = $('#username').val();
@@ -115,7 +140,7 @@ function chat_command(cmd, arg) {
 
 function prependMessages(messages, scrollDown, sentAll) {
     if (!$(".loadButton")[0]) {
-        $('#chats').prepend('<div class="loadButton">^ Load More ^</div>');
+        $('#chats').prepend('<div class="loadButton"><span class="glyphicon glyphicon-chevron-up"></span> Load More <span class="glyphicon glyphicon-chevron-up"></span></div>');
         $(".loadButton").click(function () { loadMoreMessages(); });
     }
     if (messages.length == 0) {
@@ -147,7 +172,7 @@ function prependMessages(messages, scrollDown, sentAll) {
             $('.loadButton').addClass("unavailable");
             $(".loadButton").unbind("click");
         } else {
-            $('#chats').prepend('<div class="loadButton">^ Load More ^</div>');
+            $('#chats').prepend('<div class="loadButton"><span class="glyphicon glyphicon-chevron-up"></span> Load More <span class="glyphicon glyphicon-chevron-up"></span></div>');
             $(".loadButton").click(function () { loadMoreMessages(); });
         }
     }
@@ -228,4 +253,48 @@ function openModal() {
 
 function deleteServerLog() {
     socket.emit('reset');
+    $('#chats').html('');
+}
+
+// ----------------------------------------------------------------------------------
+// -                                  SoundCloud                                    -
+// ----------------------------------------------------------------------------------
+
+SC.initialize({
+    client_id: "YOUR_CLIENT_ID",
+    redirect_uri: "http://example.com/callback.html",
+});
+
+function play() {
+    SC.stream("/tracks/293", function (sound) {
+        sound.play();
+    });
+}
+
+function searchSoundCloud() {
+    query = $('#search').val();
+    var track = null;
+    
+
+    if (query.length > 2) {
+        SC.get('/tracks', { q: query }, function (tracks) {
+            for (i in tracks) {
+                $('#sounds').append(mediaItem(tracks[i]))
+            }
+        });
+        $('#right').click();
+    }
+}
+
+function mediaItem(track) {
+    var item = '<div class="media" id="'+idtrack.id +
+                    '<a class="pull-left" href="#">' +
+                        '<img class="media-object" src="'+ track.artwork_url+'">' +
+                    '</a>' +
+                    '<div class="media-body">' +
+                        '<h4 class="media-heading">'+ track.title+'</h4>' +
+                        '<p>'+ track.user.username +'</p>' +
+                    '</div>' +
+                '</div>';
+    return item;
 }

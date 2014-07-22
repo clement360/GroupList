@@ -15,6 +15,7 @@ var users = [];
 var userID = 0;
 var messages = [];
 var messageIndex = 0;
+var groupList = [];
 
 io.sockets.on('connection', function (socket) {
     console.log("User Connected");
@@ -39,6 +40,7 @@ io.sockets.on('connection', function (socket) {
         io.sockets.emit('message', { type: 'notice', message: this.username + " has left the chat" });
         messages.push({ type: 'notice', message: this.username + " has left the chat" });
         users.splice(userIndex(this.userID), 1);
+        io.sockets.emit('newConnection', { users: users.length });
     });
     
     socket.on('reset', function () {
@@ -53,6 +55,7 @@ io.sockets.on('connection', function (socket) {
             sentAll: loadedMessages.sentAllMessages
         });
     });
+
     io.sockets.emit('newConnection', { users: users.length });
 });
 

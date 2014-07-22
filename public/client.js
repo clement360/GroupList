@@ -3,8 +3,8 @@ var nick = '';
 var connected = 0;
 var oldestMessageID = 0;
 var timer = null;
-
-
+var currentlyPlaying = null;
+var debugging = false;
 
 $(document).ready(function () {
     $('#username').bind('keypress', function (e) {
@@ -20,26 +20,44 @@ $(document).ready(function () {
         }
     });
 
-    $("#search").keydown(function () { 
+    /*$("#search").keydown(function () { 
         clearTimeout(timer);
-        timer = setTimeout(searchSoundCloud , 1000)
+        timer = setTimeout(searchSoundCloud(false) , 1000);
+    });*/
+    
+    $('#search').keydown(function (e) {
+        if (e.keyCode == 13) {
+            event.preventDefault();
+            searchSoundCloud(true);
+        }
     });
+    
+    var $Controls = $('#right, #left');
+    $Controls.mouseenter(function () {
+        $(this).css("opacity", ".5");
+    });
+    $Controls.mouseleave(function () {
+        $(this).css("opacity", ".05");
+    });
+    
+    if (debugging)
+        openModal();
 
-    openModal();
+    $('.carousel').carousel({
+        interval: false
+    });
     $('#username').focus();
 });
 
-
-
-SC.initialize({
-    client_id: "YOUR_CLIENT_ID",
-    redirect_uri: "http://example.com/callback.html",
-});
 
 socket.on('newConnection', function (data) {
     connected = data.users;
     $('.online').text(connected);
 });
+
+// ----------------------------------------------------------------------------------
+// -                               Chat Functions                                   -
+// ----------------------------------------------------------------------------------
 
 socket.on('recentMessages', function (data) {
     oldestMessageID += data.lastTwenty.length;
@@ -65,9 +83,6 @@ socket.on('message', function (data) {
     scrollToBottom();
 });
 
-// ----------------------------------------------------------------------------------
-// -                               Chat Functions                                   -
-// ----------------------------------------------------------------------------------
 
 function sendUser () {
     nick = $('#username').val();
@@ -129,7 +144,7 @@ function chat_command(cmd, arg) {
 
 function prependMessages(messages, scrollDown, sentAll) {
     if (!$(".loadButton")[0]) {
-        $('#chats').prepend('<div class="loadButton">^ Load More ^</div>');
+        $('#chats').prepend('<div class="loadButton"><span class="glyphicon glyphicon-chevron-up"></span> Load More <span class="glyphicon glyphicon-chevron-up"></span></div>');
         $(".loadButton").click(function () { loadMoreMessages(); });
     }
     if (messages.length == 0) {
@@ -161,7 +176,7 @@ function prependMessages(messages, scrollDown, sentAll) {
             $('.loadButton').addClass("unavailable");
             $(".loadButton").unbind("click");
         } else {
-            $('#chats').prepend('<div class="loadButton">^ Load More ^</div>');
+            $('#chats').prepend('<div class="loadButton"><span class="glyphicon glyphicon-chevron-up"></span> Load More <span class="glyphicon glyphicon-chevron-up"></span></div>');
             $(".loadButton").click(function () { loadMoreMessages(); });
         }
     }
@@ -249,18 +264,48 @@ function deleteServerLog() {
 // -                                  SoundCloud                                    -
 // ----------------------------------------------------------------------------------
 
+SC.initialize({
+    client_id: "YOUR_CLIENT_ID",
+    redirect_uri: "http://example.com/callback.html",
+});
+
 function play() {
     SC.stream("/tracks/293", function (sound) {
         sound.play();
     });
 }
 
-function searchSoundCloud() {
+function searchSoundCloud(skip) {
     query = $('#search').val();
+    var track = null;
     
-    if(query.length > 2)
+
+    if (query.length > 2 || skip) {
+        $('#sounds').html('');
         SC.get('/tracks', { q: query }, function (tracks) {
-            for (i in tracks)
-                console.log(":: " + tracks[i].title);
+            for (i in tracks) {
+                $('#sounds').append(mediaItem(tracks[i]))
+            }
+            $('.playButton').click(function () { playTrack($(this)[0].parentNode.parentNode.id); });
+            $("#carousel").carousel(1);
         });
+    }
+}
+
+function mediaItem(track) {
+    var art = (track.artwork_url == null)? "noCover.png" : track.artwork_url.replace("large", "badge");
+    var item = '<li class="list-group-item" id="'+ track.id +'">' +
+                        '<div id="trackText"><strong>'+ track.title+' - </strong>' + track.user.username +  
+                        '</div><span id="addControl" class="label label-primary">' +
+                        '<span class="glyphicon glyphicon glyphicon-play playButton"></span>' +
+                        '<span class="glyphicon glyphicon glyphicon-plus-sign addButton"></span></span>' +
+                '</li>';
+    return item;
+}
+
+function playTrack(id) {
+    SC.stream("/tracks/"+id, function (sound) {
+        currentlyPlaying = sound;
+        currentlyPlaying.play();
+    });
 }

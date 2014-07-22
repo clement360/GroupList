@@ -39,14 +39,12 @@ io.sockets.on('connection', function (socket) {
         io.sockets.emit('message', { type: 'notice', message: this.username + " has left the chat" });
         messages.push({ type: 'notice', message: this.username + " has left the chat" });
         users.splice(userIndex(this.userID), 1);
+        io.sockets.emit('newConnection', { users: users.length });
     });
     
     socket.on('reset', function () {
-        io.sockets.emit('reset');
+        messageIndex = 0;
         messages.length = 0;
-        users.length = 0;            ;
-        var userID = 0;
-        var messageIndex = 0;
     });
 
     socket.on('loadMore', function (data) {
@@ -56,6 +54,7 @@ io.sockets.on('connection', function (socket) {
             sentAll: loadedMessages.sentAllMessages
         });
     });
+
     io.sockets.emit('newConnection', { users: users.length });
 });
 
