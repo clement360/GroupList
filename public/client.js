@@ -4,6 +4,7 @@ var connected = 0;
 var oldestMessageID = 0;
 var timer = null;
 var currentlyPlaying = null;
+var $currentlyPlayingSpan = null;
 var debugging = false;
 
 $(document).ready(function () {
@@ -145,7 +146,7 @@ function chat_command(cmd, arg) {
 function prependMessages(messages, scrollDown, sentAll) {
     if (!$(".loadButton")[0]) {
         $('#chats').prepend('<div class="loadButton"><span class="glyphicon glyphicon-chevron-up"></span> Load More <span class="glyphicon glyphicon-chevron-up"></span></div>');
-        $(".loadButton").click(function () { loadMoreMessages(); });
+        $(".loadButton").unbind().click(function () { loadMoreMessages(); });
     }
     if (messages.length == 0) {
         $('.loadButton').html('<div class="loadButton">No Previous Messages To Load</div>');
@@ -177,7 +178,7 @@ function prependMessages(messages, scrollDown, sentAll) {
             $(".loadButton").unbind("click");
         } else {
             $('#chats').prepend('<div class="loadButton"><span class="glyphicon glyphicon-chevron-up"></span> Load More <span class="glyphicon glyphicon-chevron-up"></span></div>');
-            $(".loadButton").click(function () { loadMoreMessages(); });
+            $(".loadButton").unbind().click(function () { loadMoreMessages(); });
         }
     }
 }
@@ -286,7 +287,7 @@ function searchSoundCloud(skip) {
             for (i in tracks) {
                 $('#sounds').append(mediaItem(tracks[i]))
             }
-            $('.playButton').click(function () { playTrack($(this)[0].parentNode.parentNode.id); });
+            $('.playButton').click(function () { handlePlay(event); });
             $("#carousel").carousel(1);
         });
     }
@@ -295,7 +296,7 @@ function searchSoundCloud(skip) {
 function mediaItem(track) {
     var art = (track.artwork_url == null)? "noCover.png" : track.artwork_url.replace("large", "badge");
     var item = '<li class="list-group-item" id="'+ track.id +'">' +
-                        '<div id="trackText"><strong>'+ track.title+' - </strong>' + track.user.username +  
+                        '<div id="trackText"><strong>'+ track.title+' - </strong>' + runTime(track.duration) +  
                         '</div><span id="addControl" class="label label-primary">' +
                         '<span class="glyphicon glyphicon glyphicon-play playButton"></span>' +
                         '<span class="glyphicon glyphicon glyphicon-plus-sign addButton"></span></span>' +
@@ -303,9 +304,49 @@ function mediaItem(track) {
     return item;
 }
 
-function playTrack(id) {
-    SC.stream("/tracks/"+id, function (sound) {
+function handlePlay(event) {
+    $target = $(event.target);
+    if (currentlyPlaying == null)
+        playTrack($target);
+    else if (currentlyPlaying.playState == 0)
+        playTrack($target);
+    else if (currentlyPlaying.paused) {
+        currentlyPlaying.play();
+        $target.attr('class', 'glyphicon glyphicon-pause');
+    }
+    else if (currentlyPlaying.playState == 1) {
+        if ($currentlyPlayingSpan.sID == $target.sID)
+            pauseTrack();
+        else {
+            currentlyPlaying.stop();
+            $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-pause');
+            playTrack($target);
+        }
+    }
+}
+
+function playTrack($target) {
+    $currentlyPlayingSpan = $target;
+    id = $target.parent().parent().attr('id');
+    SC.stream("/tracks/" + id, function (sound) {
         currentlyPlaying = sound;
         currentlyPlaying.play();
+        $target.attr('class', 'glyphicon glyphicon-pause');
     });
+}
+
+function pauseTrack() {
+    $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-play');
+    currentlyPlaying.stop();
+}
+
+function runTime(ms) {
+    if (ms == null)
+        return "";
+    var x, minutes, seconds;
+    x = ms / 1000
+    seconds = parseInt(x % 60);
+    x /= 60
+    minutes = parseInt(x % 60);
+    return "("+ minutes +":"+ seconds +")"
 }
