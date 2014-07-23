@@ -269,8 +269,50 @@ hr {
 /*---------------------------------------------
 -------------------- Sounds -------------------
 ---------------------------------------------*/
-.sounds{
-    padding:0px;
+#sounds li{
+    overflow: hidden;
+}
+
+#sounds li .glyphicon {
+    padding-right: 5px;
+    cursor:pointer;
+}
+
+#sounds li:nth-child(even) {
+    background-color: rgba(0, 158, 82, 0.29)
+}
+
+#trackText{
+    float:left;
+}
+
+#addControl{
+    opacity: 0;
+    float: right;
+    font-size: 27px;
+    margin: -9px -13px -15px 10px;
+    padding: 2px;
+    background-color: rgba(95, 155, 160, 0);
+}
+
+#sounds li:hover #addControl{
+    opacity: 1;
+}
+
+#sounds li:nth-child(odd) #addControl {
+    color: rgba(0, 158, 82, 0.29);
+}
+
+#groupList{
+    list-style: none;
+}
+
+.media-object{
+    width: 67px;
+}
+
+#row{
+    margin: 25px 12px 0px 12px;
 }
 
 /*---------------------------------------------
@@ -280,10 +322,15 @@ hr {
 .carousel-control{
     position: fixed;
     opacity: .2;
+    width: 30px;
 }
 
 .carousel-control:hover, .carousel-control:focus {
     opacity: .5;
+}
+
+.media.well.well-sm{
+    /*box-shadow: 3px 3px 3px #757575;*/
 }
 
 /*---------------------------------------------
