@@ -298,8 +298,8 @@ function mediaItem(track) {
     var item = '<li class="list-group-item" id="'+ track.id +'">' +
                         '<div id="trackText"><strong>'+ track.title+' - </strong>' + runTime(track.duration) +  
                         '</div><span id="addControl" class="label label-primary">' +
-                        '<span class="glyphicon glyphicon glyphicon-play playButton"></span>' +
-                        '<span class="glyphicon glyphicon glyphicon-plus-sign addButton"></span></span>' +
+                        '<span class="glyphicon glyphicon-play playButton"></span>' +
+                        '<span class="glyphicon glyphicon-plus-sign addButton"></span></span>' +
                 '</li>';
     return item;
 }
@@ -310,18 +310,13 @@ function handlePlay(event) {
         playTrack($target);
     else if (currentlyPlaying.playState == 0)
         playTrack($target);
-    else if (currentlyPlaying.paused) {
-        currentlyPlaying.play();
-        $target.attr('class', 'glyphicon glyphicon-pause');
-    }
     else if (currentlyPlaying.playState == 1) {
-        if ($currentlyPlayingSpan.sID == $target.sID)
-            pauseTrack();
-        else {
-            currentlyPlaying.stop();
-            $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-pause');
+        if ($target.attr('class') == "glyphicon glyphicon-play playButton") {
+            stopTrack();
             playTrack($target);
-        }
+        }  
+        else
+            stopTrack();
     }
 }
 
@@ -335,8 +330,8 @@ function playTrack($target) {
     });
 }
 
-function pauseTrack() {
-    $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-play');
+function stopTrack() {
+    $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-play playButton');
     currentlyPlaying.stop();
 }
 
