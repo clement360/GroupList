@@ -3,9 +3,6 @@ var nick = '';
 var connected = 0;
 var oldestMessageID = 0;
 var timer = null;
-var currentlyPlaying = null;
-var $currentlyPlayingSpan = null;
-var debugging = false;
 
 $(document).ready(function () {
     $('#username').bind('keypress', function (e) {
@@ -21,15 +18,15 @@ $(document).ready(function () {
         }
     });
 
-    /*$("#search").keydown(function () { 
+    $("#search").keydown(function () { 
         clearTimeout(timer);
-        timer = setTimeout(searchSoundCloud(false) , 1000);
-    });*/
+        timer = setTimeout(searchSoundCloud , 1000)
+    });
     
     $('#search').keydown(function (e) {
         if (e.keyCode == 13) {
             event.preventDefault();
-            searchSoundCloud(true);
+            searchSoundCloud();
         }
     });
     
@@ -40,10 +37,8 @@ $(document).ready(function () {
     $Controls.mouseleave(function () {
         $(this).css("opacity", ".05");
     });
-    
-    if (debugging)
-        openModal();
 
+    openModal();
     $('.carousel').carousel({
         interval: false
     });
@@ -146,7 +141,7 @@ function chat_command(cmd, arg) {
 function prependMessages(messages, scrollDown, sentAll) {
     if (!$(".loadButton")[0]) {
         $('#chats').prepend('<div class="loadButton"><span class="glyphicon glyphicon-chevron-up"></span> Load More <span class="glyphicon glyphicon-chevron-up"></span></div>');
-        $(".loadButton").unbind().click(function () { loadMoreMessages(); });
+        $(".loadButton").click(function () { loadMoreMessages(); });
     }
     if (messages.length == 0) {
         $('.loadButton').html('<div class="loadButton">No Previous Messages To Load</div>');
@@ -178,7 +173,7 @@ function prependMessages(messages, scrollDown, sentAll) {
             $(".loadButton").unbind("click");
         } else {
             $('#chats').prepend('<div class="loadButton"><span class="glyphicon glyphicon-chevron-up"></span> Load More <span class="glyphicon glyphicon-chevron-up"></span></div>');
-            $(".loadButton").unbind().click(function () { loadMoreMessages(); });
+            $(".loadButton").click(function () { loadMoreMessages(); });
         }
     }
 }
@@ -276,77 +271,30 @@ function play() {
     });
 }
 
-function searchSoundCloud(skip) {
+function searchSoundCloud() {
     query = $('#search').val();
     var track = null;
     
 
-    if (query.length > 2 || skip) {
-        $('#sounds').html('');
+    if (query.length > 2) {
         SC.get('/tracks', { q: query }, function (tracks) {
             for (i in tracks) {
                 $('#sounds').append(mediaItem(tracks[i]))
             }
-            $('.playButton').click(function () { handlePlay(event); });
-            $("#carousel").carousel(1);
         });
+        $('#right').click();
     }
 }
 
 function mediaItem(track) {
-    var art = (track.artwork_url == null)? "noCover.png" : track.artwork_url.replace("large", "badge");
-    var item = '<li class="list-group-item" id="'+ track.id +'">' +
-                        '<div id="trackText"><strong>'+ track.title+' - </strong>' + runTime(track.duration) +  
-                        '</div><span id="addControl" class="label label-primary">' +
-                        '<span class="glyphicon glyphicon glyphicon-play playButton"></span>' +
-                        '<span class="glyphicon glyphicon glyphicon-plus-sign addButton"></span></span>' +
-                '</li>';
+    var item = '<div class="media" id="'+idtrack.id +
+                    '<a class="pull-left" href="#">' +
+                        '<img class="media-object" src="'+ track.artwork_url+'">' +
+                    '</a>' +
+                    '<div class="media-body">' +
+                        '<h4 class="media-heading">'+ track.title+'</h4>' +
+                        '<p>'+ track.user.username +'</p>' +
+                    '</div>' +
+                '</div>';
     return item;
-}
-
-function handlePlay(event) {
-    $target = $(event.target);
-    if (currentlyPlaying == null)
-        playTrack($target);
-    else if (currentlyPlaying.playState == 0)
-        playTrack($target);
-    else if (currentlyPlaying.paused) {
-        currentlyPlaying.play();
-        $target.attr('class', 'glyphicon glyphicon-pause');
-    }
-    else if (currentlyPlaying.playState == 1) {
-        if ($currentlyPlayingSpan.sID == $target.sID)
-            pauseTrack();
-        else {
-            currentlyPlaying.stop();
-            $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-pause');
-            playTrack($target);
-        }
-    }
-}
-
-function playTrack($target) {
-    $currentlyPlayingSpan = $target;
-    id = $target.parent().parent().attr('id');
-    SC.stream("/tracks/" + id, function (sound) {
-        currentlyPlaying = sound;
-        currentlyPlaying.play();
-        $target.attr('class', 'glyphicon glyphicon-pause');
-    });
-}
-
-function pauseTrack() {
-    $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-play');
-    currentlyPlaying.stop();
-}
-
-function runTime(ms) {
-    if (ms == null)
-        return "";
-    var x, minutes, seconds;
-    x = ms / 1000
-    seconds = parseInt(x % 60);
-    x /= 60
-    minutes = parseInt(x % 60);
-    return "("+ minutes +":"+ seconds +")"
 }

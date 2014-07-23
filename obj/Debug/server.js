@@ -15,7 +15,6 @@ var users = [];
 var userID = 0;
 var messages = [];
 var messageIndex = 0;
-var groupList = [];
 
 io.sockets.on('connection', function (socket) {
     console.log("User Connected");

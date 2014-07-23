@@ -1,7 +1,8 @@
 ﻿<!doctype html>
 <html>
 <head>
-    <title>GroupList</title>
+    <title>Socket.IO chat</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
     <link type='text/css' href='osx.css' rel='stylesheet' media='screen' />
     <script src="/socket.io/socket.io.js"></script>
     <script src='jquery.js'></script>
@@ -35,42 +36,19 @@
 
     <div id="carousel" class="carousel slide">
         <div class="carousel-inner">
-            <div id="chatPane" class="item active">
+            <div class="item active">
                 <!-- Chat Pane -->
                 <ul id="chats"></ul>
                 <footer>
-                    <div>
+                    <div id="">
                         <textarea id="m" placeholder="Write something..."></textarea>
                         <input type="submit" id="submit" autocomplete="off" placeholder="Username" onclick="sendMsg();" />
                     </div>
                 </footer>
             </div>
-            <div id="soundPane" class="item">
+            <div class="item">
                 <!-- Music Pane -->
-                <div id="row" class="row">
-                    <div class="col-md-7">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h3>Group List <small>current playlist</small></h3></div>
-                            <div class="panel-body">
-                                <ul id="groupList" class="list-group">
-                                    <!-- song results go here -->
-                                    <li><center>Search for songs on the right.</center></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-5">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h3>Add Songs <small>Search SoundCloud</small></h3></div>
-                            <div class="panel-body">
-                                <ul id="sounds" class="list-group">
-                                    <!-- song results go here -->
-                                    <li><center>Search SoundCloud with the search box above.</center></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <ol id="sounds"></ol>
             </div>
         </div>
 
