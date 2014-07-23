@@ -6,6 +6,7 @@ var timer = null;
 var currentlyPlaying = null;
 var $currentlyPlayingSpan = null;
 var debugging = false;
+var groupList = [];
 
 $(document).ready(function () {
     $('#username').bind('keypress', function (e) {
@@ -20,7 +21,7 @@ $(document).ready(function () {
             sendMsg();
         }
     });
-
+    
     /*$("#search").keydown(function () { 
         clearTimeout(timer);
         timer = setTimeout(searchSoundCloud(false) , 1000);
@@ -43,13 +44,14 @@ $(document).ready(function () {
     
     if (debugging)
         openModal();
-
+    
     $('.carousel').carousel({
         interval: false
     });
     $('#username').focus();
+    
+    $('#footPlay').click(function () { footerPlay(); });
 });
-
 
 socket.on('newConnection', function (data) {
     connected = data.users;
@@ -67,7 +69,7 @@ socket.on('recentMessages', function (data) {
 
 socket.on('message', function (data) {
     if (data.type == 'chat') {
-        if (data.nick == nick) 
+        if (data.nick == nick)
             $('#chats').append('<div class="me"><div>' + data.message + '</div></div>');
         else
             $('#chats').append('<div class="others"><div>' + data.message + ' - ' + '<strong>' + data.nick + '</strong></div></div>');
@@ -84,13 +86,19 @@ socket.on('message', function (data) {
     scrollToBottom();
 });
 
+socket.on('currentGroupList', function (data) {
+    groupList = data;
+});
 
-function sendUser () {
+socket.on('newTrack', function (data) {
+    $('#groupList').append(groupListItem(track));
+});
+
+function sendUser() {
     nick = $('#username').val();
     if (nick.length == 0) {
         $('#errorDiv').show();
-        $("#errorDiv").effect("shake",
-          { times: 1 }, 'fast');
+        $("#errorDiv").effect("shake", { times: 1 }, 'fast');
     }
     else {
         $('.username').text(nick);
@@ -114,7 +122,7 @@ function sendMsg(event) {
     } else {
         socket.emit('send', { type: 'chat', message: line, nick: nick });
     }
-
+    
     $('#m').val('');
     return false;
 }
@@ -168,7 +176,7 @@ function prependMessages(messages, scrollDown, sentAll) {
                 $('#chats').prepend($('<div>').html('<div class="notice">' + message.message));
             }
         }
-        if(scrollDown)
+        if (scrollDown)
             scrollToBottom();
         else
             scrollToTop();
@@ -202,7 +210,7 @@ function openModal() {
         init: function () {
             $("input.osx, a.osx").click(function (e) {
                 e.preventDefault();
-
+                
                 openModal();
             });
         },
@@ -215,16 +223,16 @@ function openModal() {
                 title.show();
                 d.container.slideDown('slow', function () {
                     setTimeout(function () {
-                        var h = $("#osx-modal-data", self.container).height()
-                            + title.height()
+                        var h = $("#osx-modal-data", self.container).height() 
+                            + title.height() 
                             + 50; // padding
                         d.container.animate(
                             { height: h },
                             200,
                             function () {
-                                $("#osx-modal-data", self.container).show();
-                            }
-                        );
+                            $("#osx-modal-data", self.container).show();
+                        }
+);
                     }, 300);
                 });
             })
@@ -238,9 +246,9 @@ function openModal() {
                 { top: "-" + (d.container.height() + 20) },
                 500,
                 function () {
-                    self.close(); // or $.modal.close();
-                }
-            );
+                self.close(); // or $.modal.close();
+            }
+);
             $('#m').focus();
         }
     };
@@ -270,38 +278,86 @@ SC.initialize({
     redirect_uri: "http://example.com/callback.html",
 });
 
-function play() {
-    SC.stream("/tracks/293", function (sound) {
-        sound.play();
-    });
-}
-
 function searchSoundCloud(skip) {
     query = $('#search').val();
     var track = null;
     
-
+    
     if (query.length > 2 || skip) {
         $('#sounds').html('');
         SC.get('/tracks', { q: query }, function (tracks) {
             for (i in tracks) {
-                $('#sounds').append(mediaItem(tracks[i]))
+                if (tracks[i].streamable == true)
+                    $('#sounds').append(searchResultItem(tracks[i]));
             }
             $('.playButton').click(function () { handlePlay(event); });
+            $('.addButton').click(function () { handleAdd(event); });
             $("#carousel").carousel(1);
         });
     }
 }
 
-function mediaItem(track) {
-    var art = (track.artwork_url == null)? "noCover.png" : track.artwork_url.replace("large", "badge");
-    var item = '<li class="list-group-item" id="'+ track.id +'">' +
-                        '<div id="trackText"><strong>'+ track.title+' - </strong>' + runTime(track.duration) +  
+function searchResultItem(track) {
+    var item = '<li class="list-group-item" id="' + track.id + '">' +
+                        '<div id="trackText"><strong>' + track.title + ' - </strong>' + runTime(track.duration) +  
                         '</div><span id="addControl" class="label label-primary">' +
-                        '<span class="glyphicon glyphicon glyphicon-play playButton"></span>' +
-                        '<span class="glyphicon glyphicon glyphicon-plus-sign addButton"></span></span>' +
+                        '<span class="glyphicon glyphicon-play playButton"></span>' +
+                        '<span class="glyphicon glyphicon-plus-sign addButton"></span></span>' +
                 '</li>';
     return item;
+}
+
+function handleAdd(event) {
+    $target = $(event.target);
+    id = $target.parent().parent().attr('id');
+    if (idAlreadyExists(id)) {
+    }
+    SC.get('/tracks/' + id, function (track) {
+        if (!idAlreadyExists(id)) {
+            var art = (track.artwork_url == null)? "noCover.png" : track.artwork_url;
+            $('#groupList').append(groupListItem(track));
+            socket.emit('newTrack', {
+                username: nick,
+                id: id,
+                artwork_url: art,
+                title: track.title,
+                duration: track.duration
+            });
+        }
+    });
+    $('#groupListPlaceHolder').hide();
+}
+
+function groupListItem(track) {
+    var art = (track.artwork_url == null)? "noCover.png" : track.artwork_url;
+    var item =  '<div class="well well-sm" id="'+ track.id +'">' +
+                    '<div class="media">' +
+                        '<a class="pull-left" href="#">' +
+                            '<img class="media-object" src="'+ art +'" alt="">' +
+                        '</a>' +
+                        '<div class="media-body">' +
+                            '<h4 class="media-heading">'+ track.title +'</h4>' +
+                            'ill put more words here!' + 
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+    return item;
+}
+
+function footerPlay() {
+    if (currentlyPlaying == null)
+        alert('No song Selected');
+    else if ($('#footPlay').attr('class') == "glyphicon glyphicon-pause") {
+        $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-play playButton');
+        $('#footPlay').attr('class', 'glyphicon glyphicon-play');
+        $currentlyPlayingSpan.parent().removeAttr('style');
+        currentlyPlaying.pause();
+    }
+    else {
+        $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-stop');
+        $('#footPlay').attr('class', 'glyphicon glyphicon-pause');
+        currentlyPlaying.play();
+    }
 }
 
 function handlePlay(event) {
@@ -310,34 +366,36 @@ function handlePlay(event) {
         playTrack($target);
     else if (currentlyPlaying.playState == 0)
         playTrack($target);
-    else if (currentlyPlaying.paused) {
-        currentlyPlaying.play();
-        $target.attr('class', 'glyphicon glyphicon-pause');
-    }
     else if (currentlyPlaying.playState == 1) {
-        if ($currentlyPlayingSpan.sID == $target.sID)
-            pauseTrack();
-        else {
-            currentlyPlaying.stop();
-            $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-pause');
+        if ($target.attr('class') == "glyphicon glyphicon-play playButton") {
+            stopTrack();
             playTrack($target);
-        }
+        }  
+        else
+            stopTrack();
     }
 }
 
 function playTrack($target) {
     $currentlyPlayingSpan = $target;
     id = $target.parent().parent().attr('id');
-    SC.stream("/tracks/" + id, function (sound) {
+    SC.stream("/tracks/" + id, 
+        { limit: 30, onfinish: function () { stopTrack(); } },
+        function (sound) {
         currentlyPlaying = sound;
         currentlyPlaying.play();
-        $target.attr('class', 'glyphicon glyphicon-pause');
     });
+    $target.attr('class', 'glyphicon glyphicon-stop');
+    $currentlyPlayingSpan.parent().css("opacity", "1");
+    $('#footPlay').attr('class', 'glyphicon glyphicon-pause');
 }
 
-function pauseTrack() {
+function stopTrack() {
     $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-play');
+    $('#footPlay').attr('class', 'glyphicon glyphicon-play');
+    $currentlyPlayingSpan.parent().removeAttr('style');
     currentlyPlaying.stop();
+    currentlyPlaying = null;
 }
 
 function runTime(ms) {
@@ -348,5 +406,23 @@ function runTime(ms) {
     seconds = parseInt(x % 60);
     x /= 60
     minutes = parseInt(x % 60);
-    return "("+ minutes +":"+ seconds +")"
+    if (seconds == 0)
+        return "(" + minutes + ":00)";
+    else
+        return "(" + minutes + ":" + seconds + ")";
+}
+
+function idAlreadyExists(id) {
+    for (var i = 0; i < groupList.length; i++)
+        if (groupList[i].id == id)
+            return true;
+    return false;
+}
+
+function findTrackbyId(id) {
+    for (var i = 0; i < groupList.length; i++)
+        if (groupList[i].id == id)
+            return i;
+    alert('track not found (client.js : findTrackByID)');
+    return -1;
 }

@@ -18,13 +18,17 @@ var messageIndex = 0;
 var groupList = [];
 
 io.sockets.on('connection', function (socket) {
+
     console.log("User Connected");
     userID++;
     socket.userID = userID;
     socket.username = "[placeHolder]";
     users.push(socket);
     var initialMessages = lastTwentyMessages(0);
+    
+    //Send Initial data
     socket.emit('recentMessages', { lastTwenty: initialMessages.twenty, sentAll: initialMessages.sentAllMessages });
+    socket.emit('currentGroupList', groupList);
 
     socket.on('send', function (data) {
         console.log("\nSocketID: " + socket.userID);
@@ -46,6 +50,13 @@ io.sockets.on('connection', function (socket) {
     socket.on('reset', function () {
         messageIndex = 0;
         messages.length = 0;
+    });
+    
+    socket.on('newTrack', function (data) {
+        if (!idAlreadyExists(data.id)) {
+            groupList.push(data);
+            io.sockets.emit('newTrack', data);
+        }
     });
 
     socket.on('loadMore', function (data) {
@@ -90,4 +101,11 @@ function lastTwentyMessages(start) {
         twenty: result,
         sentAllMessages: (messageIndex == -1)
     };
+}
+
+function idAlreadyExists(id) {
+    for (var i = 0; i < groupList.length; i++)
+        if (groupList[i].id == id)
+            return true;
+    return false;
 }

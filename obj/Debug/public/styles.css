@@ -201,7 +201,6 @@ body {
 .loadButton:hover{
     cursor: pointer;
     background-color: rgba(90, 204, 177, .6);
-    cursor: pointer;
     color: rgba(0, 0, 0, 0.61);
     text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
     text-align: center;
@@ -221,13 +220,20 @@ body {
 }
 
 footer {
-    box-shadow: 0 0 0px 8px #5ACCB1;
-    background: url(wall.png) repeat 0 0;
-    height: 72px;
-    padding: 10px;
+    box-shadow: 0 0 0px 3px #5ACCB1;
+    background: url(debutDark.png) repeat 0 0;
+    height: 70px;
+    padding: 8px;
     position: fixed;
     bottom: 0;
     width: 100%;
+    z-index: 200;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;
+}
+
+#soundFooter{
+    box-shadow: 0 0 0px 3px #CC5A5A;
 }
 
 #submit:hover {
@@ -240,7 +246,15 @@ footer {
     width: 80%;
     height: 92%;
     margin-right: .5%;
-    box-shadow: 3px 3px 3px #757575;
+    background: rgb(255,255,255); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(229,229,229,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(229,229,229,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(229,229,229,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(229,229,229,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
+    border-radius: 5px;
 }
 
 #submit {
@@ -258,6 +272,7 @@ footer {
     font-size: 17px;
     outline: none;
     cursor: pointer;
+    margin-top: -2px;
 }
 
 hr {
@@ -269,6 +284,11 @@ hr {
 /*---------------------------------------------
 -------------------- Sounds -------------------
 ---------------------------------------------*/
+#groupListPlaceHolder{
+    text-align: center;
+    color: #777;
+}
+
 #sounds li{
     overflow: hidden;
 }
@@ -282,15 +302,17 @@ hr {
     background-color: rgba(0, 158, 82, 0.29)
 }
 
-#trackText{
-    float:left;
+#trackText {
+    float: left;
+    width: 80%;
 }
+
 
 #addControl{
     opacity: 0;
     float: right;
     font-size: 27px;
-    margin: -9px -13px -15px 10px;
+    margin: -9px -13px -15px 0px;
     padding: 2px;
     background-color: rgba(95, 155, 160, 0);
 }
@@ -313,6 +335,26 @@ hr {
 
 #row{
     margin: 25px 12px 0px 12px;
+}
+
+.playBar{
+    background-color: rgba(173, 173, 173, 0.55);
+    border-radius: 5px;
+    height: 50px;
+    font-size: 27px;
+    background: linear-gradient(to bottom, rgba(207, 207, 207, 0.58) 0%,rgba(134, 134, 134, 0.54) 100%);
+}
+
+.playControl{
+    padding-top: 8px;
+    color: rgba(0, 0, 0, 0.83);
+    cursor: pointer;
+}
+
+.well {
+    padding: 7px;
+    margin-bottom: 10px;
+    border-radius: 3px;
 }
 
 /*---------------------------------------------
