@@ -87,6 +87,8 @@ socket.on('currentGroupList', function (data) {
         for (i in groupList) {
             $('#groupList').append(groupListItem(groupList[i]));
         }
+        $('.upVote').unbind("click").click(function () { upVote(event); });
+        $('.downVote').unbind("click").click(function () { downVote(event); });
     }
 });
 
@@ -98,6 +100,10 @@ socket.on('newTrack', function (data) {
         groupList.push(data);
         $('#groupList').append(groupListItem(data));
     }
+});
+
+socket.on('vote', function (data) {
+    updateScore(data.id, data.score)
 });
 
 function sendUser() {
@@ -299,8 +305,8 @@ function searchSoundCloud(skip) {
                 if (tracks[i].streamable == true)
                     $('#sounds').append(searchResultItem(tracks[i]));
             }
-            $('.playButton').click(function () { handlePlay(event); });
-            $('.addButton').click(function () { handleAdd(event); });
+            $('.playButton').unbind("click").click(function () { handlePlay(event); });
+            $('.addButton').unbind("click").click(function () { handleAdd(event); });
             $("#carousel").carousel(1);
         });
     }
@@ -323,8 +329,6 @@ function handleAdd(event) {
         SC.get('/tracks/' + id, function (track) {
             if (!idAlreadyExists(id)) {
                 var art = (track.artwork_url == null)? "noCover.png" : track.artwork_url;
-                $('.upVote').click(function () { });
-                $('.downVote').click(function () { });
                 var newTrack = {
                     username: nick,
                     id: id,
@@ -335,6 +339,8 @@ function handleAdd(event) {
                     duration: track.duration
                 };
                 $('#groupList').append(groupListItem(newTrack));
+                $('.upVote').unbind("click").click(function () { upVote($(this)); });
+                $('.downVote').unbind("click").click(function () { downVote($(this)); });
                 groupList.push(newTrack);
                 socket.emit('newTrack', newTrack);
             }
@@ -444,6 +450,46 @@ function runTime(ms) {
     return "(" + minutes + ":" + secondString + ")";
 }
 
+function upVote(e) {
+    var $upVote = $(e.target);
+    var $scoreDiv = $upVote.parent().children('div');
+    var $downVote = $upVote.parent().children('.downVote');
+    var id = parseInt($scoreDiv.attr('id').replace('score', ''));
+    if (!$upVote.hasClass('selectedVote') && !$downVote.hasClass('selectedVote')) {
+        $upVote.addClass('selectedVote');
+        socket.emit('vote', { type: 'upVote', id: id, username: nick });
+    }
+    else if ($upVote.hasClass('selectedVote')) {
+        $upVote.removeClass('selectedVote');
+        socket.emit('vote', { type: 'removeUpVote', id: id, username: nick });
+    }
+    else {
+        $downVote.removeClass('selectedVote');
+        $upVote.addClass('selectedVote');
+        socket.emit('vote', { type: 'switchToUpVote', id: id, username: nick });
+    }
+}
+
+function downVote(e) {
+    var $downVote = $(e.target);;
+    var $scoreDiv = $downVote.parent().children('div');
+    var $upVote = $downVote.parent().children('.upVote');
+    var id = parseInt($scoreDiv.attr('id').replace('score', ''));
+    if (!$upVote.hasClass('selectedVote') && !$downVote.hasClass('selectedVote')) {
+        $downVote.addClass('selectedVote');
+        socket.emit('vote', { type: 'downVote', id: id, username: nick });
+    }
+    else if ($downVote.hasClass('selectedVote')) {
+        $downVote.removeClass('selectedVote');
+        socket.emit('vote', { type: 'removeDownVote', id: id, username: nick });
+    }
+    else {
+        $upVote.removeClass('selectedVote');
+        $downVote.addClass('selectedVote');
+        socket.emit('vote', { type: 'switchToDownVote', id: id, username: nick });
+    }
+}
+
 function idAlreadyExists(id) {
     for (var i = 0; i < groupList.length; i++)
         if (groupList[i].id == id)
@@ -451,15 +497,20 @@ function idAlreadyExists(id) {
     return false;
 }
 
-function findTrackbyId(id) {
+function findTrackById(id) {
     for (var i = 0; i < groupList.length; i++)
         if (groupList[i].id == id)
             return i;
-    alert('track not found (client.js : findTrackByID)');
+    alert('track not found (client.js : findTrackById)');
     return -1;
 }
 
 function updateIndex(id, index) {
-    groupList[findTrackbyId(id)].index = index;
+    groupList[findTrackById(id)].index = index;
     $('#index' + id + '').text(index);
+}
+
+function updateScore(id, score) {
+    groupList[findTrackById(id)].score = score;
+    $('#score' + id + '').text(score);
 }

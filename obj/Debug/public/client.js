@@ -81,10 +81,14 @@ socket.on('message', function (data) {
 });
 
 socket.on('currentGroupList', function (data) {
-    $('#groupListPlaceHolder').hide();
-    groupList = data;
-    for (i in groupList) {
-        $('#groupList').append(groupListItem(groupList[i]));
+    if (data.length > 0) {
+        $('#groupListPlaceHolder').hide();
+        groupList = data;
+        for (i in groupList) {
+            $('#groupList').append(groupListItem(groupList[i]));
+        }
+        $('.upVote').unbind("click").click(function () { upVote(event); });
+        $('.downVote').unbind("click").click(function () { downVote(event); });
     }
 });
 
@@ -96,6 +100,10 @@ socket.on('newTrack', function (data) {
         groupList.push(data);
         $('#groupList').append(groupListItem(data));
     }
+});
+
+socket.on('vote', function (data) {
+    
 });
 
 function sendUser() {
@@ -321,8 +329,8 @@ function handleAdd(event) {
         SC.get('/tracks/' + id, function (track) {
             if (!idAlreadyExists(id)) {
                 var art = (track.artwork_url == null)? "noCover.png" : track.artwork_url;
-                $('.upVote').click(function () { });
-                $('.downVote').click(function () { });
+                $('.upVote').unbind("click").click(function () { upVote(event); });
+                $('.downVote').unbind("click").click(function () { downVote(event); });
                 var newTrack = {
                     username: nick,
                     id: id,
@@ -442,6 +450,46 @@ function runTime(ms) {
     return "(" + minutes + ":" + secondString + ")";
 }
 
+function upVote(event) {
+    var $upVote = $(event.target);
+    var $scoreDiv = $upVote.parent().children('div');
+    var $downVote = $upVote.parent().children('.downVote');
+    var id = parseInt($scoreDiv.attr('id').replace('score', ''));
+    if (!$upVote.hasClass('selectedVote') && !$downVote.hasClass('selectedVote')) {
+        $upVote.addClass('selectedVote');
+        socket.emit('vote', { type: 'upVote', id: id, username: nick });
+    }
+    else if ($upVote.hasClass('selectedVote')) {
+        $upVote.removeClass('selectedVote');
+        socket.emit('vote', { type: 'removeUpVote', id: id, username: nick });
+    }
+    else {
+        $downVote.removeClass('selectedVote');
+        $upVote.addClass('selectedVote');
+        socket.emit('vote', { type: 'switchToUpVote', id: id, username: nick });
+    }
+}
+
+function downVote(event) {
+    var $downVote = $(event.target);
+    var $scoreDiv = $downVote.parent().children('div');
+    var $upVote = $downVote.parent().children('.upVote');
+    var id = parseInt($scoreDiv.attr('id').replace('score', ''));
+    if (!$upVote.hasClass('selectedVote') && !$downVote.hasClass('selectedVote')) {
+        $downVote.addClass('selectedVote');
+        socket.emit('vote', { type: 'downVote', id: id, username: nick });
+    }
+    else if ($downVote.hasClass('selectedVote')) {
+        $downVote.removeClass('selectedVote');
+        socket.emit('vote', { type: 'removeDownVote', id: id, username: nick });
+    }
+    else {
+        $upVote.removeClass('selectedVote');
+        $downVote.addClass('selectedVote');
+        socket.emit('vote', { type: 'switchToDownVote', id: id, username: nick });
+    }
+}
+
 function idAlreadyExists(id) {
     for (var i = 0; i < groupList.length; i++)
         if (groupList[i].id == id)
@@ -449,15 +497,20 @@ function idAlreadyExists(id) {
     return false;
 }
 
-function findTrackbyId(id) {
+function findTrackById(id) {
     for (var i = 0; i < groupList.length; i++)
         if (groupList[i].id == id)
             return i;
-    alert('track not found (client.js : findTrackByID)');
+    alert('track not found (client.js : findTrackById)');
     return -1;
 }
 
 function updateIndex(id, index) {
-    groupList[findTrackbyId(id)].index = index;
+    groupList[findTrackById(id)].index = index;
     $('#index' + id + '').text(index);
+}
+
+function updateScore(id, score) {
+    groupList[findTrackById(id)].score = score;
+    $('#score' + id + '').text(score);
 }

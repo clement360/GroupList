@@ -69,6 +69,10 @@ io.sockets.on('connection', function (socket) {
             sentAll: loadedMessages.sentAllMessages
         });
     });
+    
+    socket.on('vote', function (data) {
+        handleVote(data);
+    });
 
     io.sockets.emit('newConnection', { users: users.length });
 });
@@ -111,4 +115,43 @@ function idAlreadyExists(id) {
         if (groupList[i].id == id)
             return true;
     return false;
+}
+
+function handleVote(data) { 
+    var track = groupList[findTrackById(data.id)];
+    switch (data.type) {
+        case 'upVote':
+            track.score += 1;
+            break;
+        case 'removeUpVote':
+            track.score -= 1;
+            break;
+        case 'switchToUpVote':
+            track.score += 2;
+            break;
+        case 'downVote':
+            track.score -= 1;
+            break;
+        case 'removeDownVote':
+            track.score += 1;
+            break;
+        case 'switchToDownVote':
+            track.score -= 2;
+            break;
+        default:
+            console.log('Error: illegal vote type (' + data.type + ')');
+    }
+    io.sockets.emit('vote', { id: track.id, newScore: track.score });
+}
+
+function findTrackById(id) {
+    for (var i = 0; i < groupList.length; i++)
+        if (groupList[i].id == id)
+            return i;
+    alert('track not found (client.js : findTrackById)');
+    return -1;
+}
+
+function updateIndex(id, index) {
+    groupList[findTrackById(id)].index = index;
 }

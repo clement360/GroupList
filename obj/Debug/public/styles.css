@@ -380,6 +380,10 @@ hr {
     cursor: pointer;
 }
 
+.selectedVote{
+    color: white;
+}
+
 .downVote{
     cursor: pointer;
 }
