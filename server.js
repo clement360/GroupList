@@ -61,6 +61,11 @@ io.sockets.on('connection', function (socket) {
             io.sockets.emit('newTrack', data);
         }
     });
+    
+    socket.on('removeTrack', function (data) {
+        groupList.splice(findTrackById(data.id), 1);
+        socket.emit('removeTrack', data);
+    });
 
     socket.on('loadMore', function (data) {
         var loadedMessages = lastTwentyMessages(data.start);

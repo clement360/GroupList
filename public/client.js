@@ -106,6 +106,10 @@ socket.on('vote', function (data) {
     updateScore(data.id, data.score)
 });
 
+socket.on('removeTrack', function (data) {
+    removeFromGroupList(id, false);
+});
+
 function sendUser() {
     nick = $('#username').val();
     if (nick.length == 0) {
@@ -209,12 +213,12 @@ function loadMoreMessages() {
 }
 
 function scrollToBottom() {
-    if($('#myCarousel .active').index('#myCarousel .item') == 0)
+    if($('#myCarousel .active').index('#myCarousel .item') == -1)
         $("html, body").animate({ scrollTop: $(document).height() - $(window).height() }, 500);
 }
 
 function scrollToTop() {
-    if ($('#myCarousel .active').index('#myCarousel .item') == 0)
+    if ($('#myCarousel .active').index('#myCarousel .item') == -1)
         $("html, body").animate({ scrollTop: 0 }, 1000);
 }
 
@@ -300,13 +304,13 @@ function searchSoundCloud(skip) {
     
     if (query.length > 2 || skip) {
         $('#sounds').html('');
-        SC.get('/tracks', { q: query }, function (tracks) {
+        SC.get('/tracks', { q: query, limit: 25 }, function (tracks) {
             for (i in tracks) {
                 if (tracks[i].streamable == true)
                     $('#sounds').append(searchResultItem(tracks[i]));
             }
-            $('.playButton').unbind("click").click(function () { handlePlay(event); });
-            $('.addButton').unbind("click").click(function () { handleAdd(event); });
+            $('.playButton').unbind("click").click(function () { handlePlay($(this)); });
+            $('.addButton').unbind("click").click(function () { handleAdd($(this)); });
             $("#carousel").carousel(1);
         });
     }
@@ -322,8 +326,7 @@ function searchResultItem(track) {
     return item;
 }
 
-function handleAdd(event) {
-    $target = $(event.target);
+function handleAdd($target) {
     id = $target.parent().parent().attr('id');
     if (!idAlreadyExists(id)) {
         SC.get('/tracks/' + id, function (track) {
@@ -338,6 +341,8 @@ function handleAdd(event) {
                     title: track.title,
                     duration: track.duration
                 };
+
+                replaceAddButton(id);
                 $('#groupList').append(groupListItem(newTrack));
                 $('.upVote').unbind("click").click(function () { upVote($(this)); });
                 $('.downVote').unbind("click").click(function () { downVote($(this)); });
@@ -353,7 +358,7 @@ function handleAdd(event) {
 function groupListItem(track) {
     var art = (track.artwork_url == null)? "noCover.png" : track.artwork_url;
     var index = (track.index == null)? 0 : track.index;
-    var item =  '<div class="well well-sm">' +
+    var item =  '<div class="well well-sm" id="well' + track.id + '">' +
                     '<div class="media">' +
                         '<div class="indexContainer pull-left"><div id="index'+track.id+'">'+ index +'</div></div>' +
                         '<a class="pull-left" href="#">' +
@@ -395,8 +400,7 @@ function footerPlay() {
     }
 }
 
-function handlePlay(event) {
-    $target = $(event.target);
+function handlePlay($target) {
     if (currentlyPlaying == null)
         playTrack($target);
     else if (currentlyPlaying.playState == 0)
@@ -450,8 +454,7 @@ function runTime(ms) {
     return "(" + minutes + ":" + secondString + ")";
 }
 
-function upVote(e) {
-    var $upVote = $(e.target);
+function upVote($upVote) {
     var $scoreDiv = $upVote.parent().children('div');
     var $downVote = $upVote.parent().children('.downVote');
     var id = parseInt($scoreDiv.attr('id').replace('score', ''));
@@ -470,8 +473,7 @@ function upVote(e) {
     }
 }
 
-function downVote(e) {
-    var $downVote = $(e.target);;
+function downVote($downVote) {
     var $scoreDiv = $downVote.parent().children('div');
     var $upVote = $downVote.parent().children('.upVote');
     var id = parseInt($scoreDiv.attr('id').replace('score', ''));
@@ -513,4 +515,28 @@ function updateIndex(id, index) {
 function updateScore(id, score) {
     groupList[findTrackById(id)].score = score;
     $('#score' + id + '').text(score);
+}
+
+function replaceAddButton(id) {
+    var button = $('#' + id + '').find('.addButton');
+    button.removeAttr('class').addClass('glyphicon glyphicon-remove-sign');
+    button.unbind().click(function () { 
+        removeFromGroupList(id, true);
+    });
+}
+
+function removeFromGroupList(id, tellServer) {
+    if (idAlreadyExists(id)) {
+        var trackIndex = findTrackById(id);
+        if (tellServer)
+            socket.emit('removeTrack', { id: id });
+    
+        if (groupList[trackIndex].username == nick) {
+            $('#well' + id + '').fadeOut();
+            var button = $('#' + id + '').find('.glyphicon-remove-sign');
+            button.removeAttr('class').addClass('glyphicon glyphicon-plus-sign');
+            button.unbind().click(function () { handleAdd($this); });
+        }
+        groupList.splice(trackIndex, 1);
+    }
 }

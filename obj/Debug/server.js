@@ -61,6 +61,11 @@ io.sockets.on('connection', function (socket) {
             io.sockets.emit('newTrack', data);
         }
     });
+    
+    socket.on('removeTrack', function (data) {
+        groupList.splice(findTrackById(data.id), 1);
+        socket.emit('removeTrack', data);
+    });
 
     socket.on('loadMore', function (data) {
         var loadedMessages = lastTwentyMessages(data.start);
@@ -141,7 +146,7 @@ function handleVote(data) {
         default:
             console.log('Error: illegal vote type (' + data.type + ')');
     }
-    io.sockets.emit('vote', { id: track.id, newScore: track.score });
+    io.sockets.emit('vote', { id: track.id, score: track.score });
 }
 
 function findTrackById(id) {
