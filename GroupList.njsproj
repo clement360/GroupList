@@ -23,7 +23,6 @@
     <Content Include="public\osx.css" />
     <Content Include="public\styles.css" />
     <Content Include="public\knit.png" />
-    <Content Include="public\wall.png" />
     <Compile Include="public\client.js" />
     <Compile Include="public\jquery.js" />
     <Compile Include="public\jquery.simplemodal.js" />

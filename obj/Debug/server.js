@@ -50,10 +50,13 @@ io.sockets.on('connection', function (socket) {
     socket.on('reset', function () {
         messageIndex = 0;
         messages.length = 0;
+        groupList.length = 0;
     });
     
     socket.on('newTrack', function (data) {
         if (!idAlreadyExists(data.id)) {
+            data.index = groupList.length + 1;
+            data.score = 0;
             groupList.push(data);
             io.sockets.emit('newTrack', data);
         }

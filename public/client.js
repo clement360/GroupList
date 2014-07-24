@@ -1,5 +1,5 @@
 var socket = io();
-var nick = '';
+var nick = '[Client]';
 var connected = 0;
 var oldestMessageID = 0;
 var timer = null;
@@ -22,11 +22,6 @@ $(document).ready(function () {
         }
     });
     
-    /*$("#search").keydown(function () { 
-        clearTimeout(timer);
-        timer = setTimeout(searchSoundCloud(false) , 1000);
-    });*/
-    
     $('#search').keydown(function (e) {
         if (e.keyCode == 13) {
             event.preventDefault();
@@ -42,8 +37,7 @@ $(document).ready(function () {
         $(this).css("opacity", ".05");
     });
     
-    if (debugging)
-        openModal();
+    openModal();
     
     $('.carousel').carousel({
         interval: false
@@ -87,16 +81,23 @@ socket.on('message', function (data) {
 });
 
 socket.on('currentGroupList', function (data) {
-    $('#groupListPlaceHolder').hide();
-    groupList = data;
-    for (i in groupList) {
-        $('#groupList').append(groupListItem(groupList[i]));
+    if (data.length > 0) {
+        $('#groupListPlaceHolder').hide();
+        groupList = data;
+        for (i in groupList) {
+            $('#groupList').append(groupListItem(groupList[i]));
+        }
     }
 });
 
 socket.on('newTrack', function (data) {
     $('#groupListPlaceHolder').hide();
-    $('#groupList').append(groupListItem(data));
+    if (data.username == nick)
+        updateIndex(data.id, data.index);
+    if (!idAlreadyExists(data.id)) {
+        groupList.push(data);
+        $('#groupList').append(groupListItem(data));
+    }
 });
 
 function sendUser() {
@@ -274,6 +275,7 @@ function openModal() {
 function deleteServerLog() {
     socket.emit('reset');
     $('#chats').html('');
+    $('#groupList').html('<li id="groupListPlaceHolder"><h5>Selected songs go here.</h5></li>');
 }
 
 // ----------------------------------------------------------------------------------
@@ -321,32 +323,50 @@ function handleAdd(event) {
         SC.get('/tracks/' + id, function (track) {
             if (!idAlreadyExists(id)) {
                 var art = (track.artwork_url == null)? "noCover.png" : track.artwork_url;
-                $('#groupList').append(groupListItem(track));
-                socket.emit('newTrack', {
+                $('.upVote').click(function () { });
+                $('.downVote').click(function () { });
+                var newTrack = {
                     username: nick,
                     id: id,
+                    index: 0,
                     artwork_url: art,
+                    score: 0,
                     title: track.title,
                     duration: track.duration
-                });
+                };
+                $('#groupList').append(groupListItem(newTrack));
+                groupList.push(newTrack);
+                socket.emit('newTrack', newTrack);
             }
         });
         $('#groupListPlaceHolder').hide();
     }
-    else
         
 }
 
 function groupListItem(track) {
     var art = (track.artwork_url == null)? "noCover.png" : track.artwork_url;
-    var item =  '<div class="well well-sm" id="'+ track.id +'">' +
+    var index = (track.index == null)? 0 : track.index;
+    var item =  '<div class="well well-sm">' +
                     '<div class="media">' +
+                        '<div class="indexContainer pull-left"><div id="index'+track.id+'">'+ index +'</div></div>' +
                         '<a class="pull-left" href="#">' +
                             '<img class="media-object" src="'+ art +'" alt="">' +
                         '</a>' +
                         '<div class="media-body">' +
-                            '<h4 class="media-heading">'+ track.title +'</h4>' +
-                            'ill put more words here!' + 
+                            '<div class="row">' +
+                                '<div class="col-xs-10">' +
+                                    '<h5 class="media-heading">' + track.title + '</h5>' +
+                                    '<div class="groupListDescription">' +
+                                        'Duration: ' + runTime(track.duration) + ' Added By: ' + track.username + 
+                                    '</div>' +
+                                '</div>' +
+                                '<div id="voteConsole">' +
+                                    '<span class="glyphicon glyphicon-chevron-up upVote"></span>' +
+                                    '<div class="score" id="score' + track.id + '">'+ track.score +'</div>' +
+                                    '<span class="glyphicon glyphicon-chevron-down downVote"></span>' +
+                                '</div>' +
+                            '</div>' +
                         '</div>' +
                     '</div>' +
                 '</div>';
@@ -408,6 +428,7 @@ function stopTrack() {
 }
 
 function runTime(ms) {
+    var secondString = '';
     if (ms == null)
         return "";
     var x, minutes, seconds;
@@ -415,10 +436,12 @@ function runTime(ms) {
     seconds = parseInt(x % 60);
     x /= 60
     minutes = parseInt(x % 60);
+    secondString = seconds;
+    if (seconds < 10)
+        secondString = '0' + seconds;
     if (seconds == 0)
-        return "(" + minutes + ":00)";
-    else
-        return "(" + minutes + ":" + seconds + ")";
+        secondString = '00';
+    return "(" + minutes + ":" + secondString + ")";
 }
 
 function idAlreadyExists(id) {
@@ -434,4 +457,9 @@ function findTrackbyId(id) {
             return i;
     alert('track not found (client.js : findTrackByID)');
     return -1;
+}
+
+function updateIndex(id, index) {
+    groupList[findTrackbyId(id)].index = index;
+    $('#index' + id + '').text(index);
 }
