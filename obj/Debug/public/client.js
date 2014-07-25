@@ -107,7 +107,7 @@ socket.on('vote', function (data) {
 });
 
 socket.on('removeTrack', function (data) {
-    removeFromGroupList(data.id, false);
+    removeFromGroupList(data.id);
 });
 
 function sendUser() {
@@ -283,6 +283,7 @@ function openModal() {
 }
 
 function deleteServerLog() {
+    groupList.length = 0;
     socket.emit('reset');
     $('#chats').html('');
     $('#groupList').html('<li id="groupListPlaceHolder"><h5>Selected songs go here.</h5></li>');
@@ -521,23 +522,29 @@ function replaceAddButton(id) {
     var button = $('#' + id + '').find('.addButton');
     button.removeAttr('class').addClass('glyphicon glyphicon-remove-sign');
     button.unbind().click(function () { 
-        removeFromGroupList(id, true);
+        socket.emit('removeTrack', { id: id });
     });
 }
 
-function removeFromGroupList(id, tellServer) {
+function removeFromGroupList(id) {
     if (idAlreadyExists(id)) {
         var trackIndex = findTrackById(id);
-        if (tellServer)
-            socket.emit('removeTrack', { id: id });
     
-        if (groupList[trackIndex].username == nick) {
-            $('#well' + id + '').fadeOut();
-            $('#well' + id + '').remove();
-            var button = $('#' + id + '').find('.glyphicon-remove-sign');
-            button.removeAttr('class').addClass('glyphicon glyphicon-plus-sign addButton');
-            button.unbind().click(function () { handleAdd($(this)); });
-        }
+        $('#well' + id + '').fadeOut(300, function () {$(this).remove();});
+        var button = $('#' + id + '').find('.glyphicon-remove-sign');
+        button.removeAttr('class').addClass('glyphicon glyphicon-plus-sign addButton');
+        button.unbind().click(function () { handleAdd($(this)); });
+
+        updateTrailingindices(trackIndex + 1, groupList[trackIndex].index);
         groupList.splice(trackIndex, 1);
+    }
+}
+
+function updateTrailingindices(indexAfterDelete, index) {
+    if (indexAfterDelete < groupList.length) {
+        for (var i = indexAfterDelete; i < groupList.length; i++) {
+            updateIndex(groupList[i].id, index);
+            index++;
+        }
     }
 }

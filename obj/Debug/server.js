@@ -63,9 +63,10 @@ io.sockets.on('connection', function (socket) {
     });
     
     socket.on('removeTrack', function (data) {
-        var removedTrack = groupList.splice(findTrackById(data.id), 1);
-        socket.emit('removeTrack', data);
-        console.log(removedTrack[0].title);
+        var removedIndex = findTrackById(data.id);
+        updateTrailingindices(removedIndex + 1, groupList[removedIndex].index);
+        groupList.splice(removedIndex, 1);
+        io.sockets.emit('removeTrack', data);
     });
 
     socket.on('loadMore', function (data) {
@@ -108,8 +109,7 @@ function lastTwentyMessages(start) {
         else
             result.push(prev);
     }
-    messageIndex = messages.length - x - 1;
-    console.log("Start = " + start + ", messages.length = " + messages.length+", messageIndex = " +messageIndex+ ", result.length = " + result.length);
+
     return {
         twenty: result,
         sentAllMessages: (messageIndex == -1)
@@ -154,10 +154,19 @@ function findTrackById(id) {
     for (var i = 0; i < groupList.length; i++)
         if (groupList[i].id == id)
             return i;
-    alert('track not found (client.js : findTrackById)');
+    console.log('track not found (client.js : findTrackById)');
     return -1;
 }
 
 function updateIndex(id, index) {
     groupList[findTrackById(id)].index = index;
+}
+
+function updateTrailingindices(indexAfterDelete, index) {
+    if (indexAfterDelete < groupList.length) {
+        for (var i = indexAfterDelete; i < groupList.length; i++) {
+            updateIndex(groupList[i].id, index);
+            index++;
+        }
+    }
 }
