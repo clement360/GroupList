@@ -84,8 +84,6 @@ io.sockets.on('connection', function (socket) {
     io.sockets.emit('newConnection', { users: users.length });
 });
 
-console.log("Running");
-
 http.listen(3000, function () {
     console.log('listening on *:3000');
 });
@@ -147,6 +145,7 @@ function handleVote(data) {
         default:
             console.log('Error: illegal vote type (' + data.type + ')');
     }
+    organizeGroupList();
     io.sockets.emit('vote', { id: track.id, score: track.score });
 }
 
@@ -169,4 +168,23 @@ function updateTrailingindices(indexAfterDelete, index) {
             index++;
         }
     }
+}
+
+function organizeGroupList() {
+    var oldListOrder = [];
+    for (var i = 0; i < groupList.length; i++) {
+        oldListOrder.push({ id: groupList[i].id, index: groupList[i].index });
+    }
+    groupList.sort(compareTracks);
+    for (var i = 0; i < groupList.length; i++) {
+        groupList[i].index = i + 1;
+    }
+}
+
+function compareTracks(a, b) {
+    if (a.score < b.score)
+        return 1;
+    if (a.score > b.score)
+        return -1;
+    return 0;
 }
