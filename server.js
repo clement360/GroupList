@@ -57,6 +57,7 @@ io.sockets.on('connection', function (socket) {
         if (!idAlreadyExists(data.id)) {
             data.index = groupList.length + 1;
             data.score = 0;
+            data.votes = [];
             groupList.push(data);
             io.sockets.emit('newTrack', data);
         }
@@ -122,31 +123,63 @@ function idAlreadyExists(id) {
 }
 
 function handleVote(data) { 
+    var voteState;
     var track = groupList[findTrackById(data.id)];
-    switch (data.type) {
-        case 'upVote':
-            track.score += 1;
-            break;
-        case 'removeUpVote':
-            track.score -= 1;
-            break;
-        case 'switchToUpVote':
-            track.score += 2;
-            break;
-        case 'downVote':
-            track.score -= 1;
-            break;
-        case 'removeDownVote':
-            track.score += 1;
-            break;
-        case 'switchToDownVote':
-            track.score -= 2;
-            break;
-        default:
-            console.log('Error: illegal vote type (' + data.type + ')');
+    var oldVoteState = findVote(track, username);
+    if (data.type == 'upvote') {
+        switch (oldVoteState) {
+            case -1:
+                track.score += 2;
+                voteState = 1;
+                break;
+            case 0:
+                track.score += 1;
+                voteState = 1;
+                break;
+            case 1:
+                track.score -= 1;
+                voteState = 0;
+                break;
+        }
     }
+    else {
+        switch (oldVoteState) {
+            case -1:
+                track.score += 1;
+                voteState = 0;
+                break;
+            case 0:
+                track.score -= 1;
+                voteState = -1;
+                break;
+            case 1:
+                track.score -= 2;
+                voteState = -1;
+                break;
+        }
+    }
+
+    setVotes(track, data.username, voteState);
     organizeGroupList();
-    io.sockets.emit('vote', { id: track.id, score: track.score });
+    io.sockets.emit('vote', { id: track.id, score: track.score, voteState: voteState });
+}
+
+function setVotes(track, username, votestate) {
+    var voteIndex = findVote(track, username);
+    if (voteIndex == -1) {
+        track.votes.push({usename: username, voteState: voteState});
+    }
+    else { 
+        track.votes[voteIndex].voteState = voteState;
+    }
+}
+
+function findVote(track, username) {
+    for (i in track.votes) {
+        if (track.votes[i].username == username)
+            return track.votes[i].voteState;
+    }
+    return 0;
 }
 
 function findTrackById(id) {

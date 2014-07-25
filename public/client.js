@@ -64,6 +64,7 @@ socket.on('newTrack', function (data) {
 
 socket.on('vote', function (data) {
     updateScore(data.id, data.score);
+    updateVoteState();
     organizeGroupList();
 });
 
@@ -118,21 +119,14 @@ function handleAdd($target) {
                 var newTrack = {
                     username: nick,
                     id: id,
-                    index: 0,
                     artwork_url: art,
-                    score: 0,
                     title: track.title,
                     duration: track.duration
                 };
 
                 replaceAddButton(id);
                 groupList.push(newTrack);
-                renderGroupList();
-                //$('#groupList').append(groupListItem(newTrack));
-                //$('.upVote').unbind("click").click(function () { upVote($(this)); });
-                //$('.downVote').unbind("click").click(function () { downVote($(this)); });
-                //$('.wellRemove').unbind("click").click(function () { wellRemove($(this)); });
-                
+                renderGroupList();                
                 socket.emit('newTrack', newTrack);
             }
         });
@@ -142,7 +136,8 @@ function handleAdd($target) {
 }
 
 function groupListItem(track) {
-    var userTrack = (track.username == nick); // TODO: if(userTrack) 
+    var score = (track.score == null)? 0 : track.score; 
+    var userTrack = (track.username == nick);
     var art = (track.artwork_url == null)? "noCover.png" : track.artwork_url;
     var index = (track.index == null)? 0 : track.index;
     var item = '<div class="well well-sm" id="well' + track.id + '">';
@@ -257,40 +252,14 @@ function runTime(ms) {
 
 function upVote($upVote) {
     var $scoreDiv = $upVote.parent().children('div');
-    var $downVote = $upVote.parent().children('.downVote');
     var id = parseInt($scoreDiv.attr('id').replace('score', ''));
-    if (!$upVote.hasClass('selectedVote') && !$downVote.hasClass('selectedVote')) {
-        $upVote.addClass('selectedVote');
-        socket.emit('vote', { type: 'upVote', id: id, username: nick });
-    }
-    else if ($upVote.hasClass('selectedVote')) {
-        $upVote.removeClass('selectedVote');
-        socket.emit('vote', { type: 'removeUpVote', id: id, username: nick });
-    }
-    else {
-        $downVote.removeClass('selectedVote');
-        $upVote.addClass('selectedVote');
-        socket.emit('vote', { type: 'switchToUpVote', id: id, username: nick });
-    }
+    socket.emit('vote', { type: 'upVote', id: id, username: nick });
 }
 
 function downVote($downVote) {
     var $scoreDiv = $downVote.parent().children('div');
-    var $upVote = $downVote.parent().children('.upVote');
-    var id = parseInt($scoreDiv.attr('id').replace('score', ''));
-    if (!$upVote.hasClass('selectedVote') && !$downVote.hasClass('selectedVote')) {
-        $downVote.addClass('selectedVote');
-        socket.emit('vote', { type: 'downVote', id: id, username: nick });
-    }
-    else if ($downVote.hasClass('selectedVote')) {
-        $downVote.removeClass('selectedVote');
-        socket.emit('vote', { type: 'removeDownVote', id: id, username: nick });
-    }
-    else {
-        $upVote.removeClass('selectedVote');
-        $downVote.addClass('selectedVote');
-        socket.emit('vote', { type: 'switchToDownVote', id: id, username: nick });
-    }
+    var id = parseInt($scoreDiv.attr('id').replace('score', ''));  
+    socket.emit('vote', { type: 'downVote', id: id, username: nick });
 }
 
 function idAlreadyExists(id) {
@@ -316,6 +285,25 @@ function updateIndex(id, index) {
 function updateScore(id, score) {
     groupList[findTrackById(id)].score = score;
     $('#score' + id + '').text(score);
+}
+
+function updateVoteState(id, voteState) {
+    groupList[findTrackById(id)].voteState = voteState;
+    var $scoreDiv = $('#score' + voteState + '');
+    var $upVote = $scoreDiv.parent().children('.upVote');
+    var $downVote = $scoreDiv.parent().children('.downVote');
+    $upVote.removeClass('selectedVote');
+    $downVote.removeClass('selectedVote');
+    switch (voteState) {
+        case -1:
+            $downVote.addClass('selectedVote');
+            break;
+        case 0:
+            break;
+        case 1:
+            $upVote.addClass('selectedVote');
+            break;
+    }
 }
 
 function replaceAddButton(id) {
