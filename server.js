@@ -63,8 +63,9 @@ io.sockets.on('connection', function (socket) {
     });
     
     socket.on('removeTrack', function (data) {
-        groupList.splice(findTrackById(data.id), 1);
+        var removedTrack = groupList.splice(findTrackById(data.id), 1);
         socket.emit('removeTrack', data);
+        console.log(removedTrack[0].title);
     });
 
     socket.on('loadMore', function (data) {

@@ -107,7 +107,7 @@ socket.on('vote', function (data) {
 });
 
 socket.on('removeTrack', function (data) {
-    removeFromGroupList(id, false);
+    removeFromGroupList(data.id, false);
 });
 
 function sendUser() {
@@ -213,12 +213,12 @@ function loadMoreMessages() {
 }
 
 function scrollToBottom() {
-    if($('#myCarousel .active').index('#myCarousel .item') == -1)
+    if($('.active').index() == -1)
         $("html, body").animate({ scrollTop: $(document).height() - $(window).height() }, 500);
 }
 
 function scrollToTop() {
-    if ($('#myCarousel .active').index('#myCarousel .item') == -1)
+    if ($('.active').index() == -1)
         $("html, body").animate({ scrollTop: 0 }, 1000);
 }
 
@@ -526,17 +526,18 @@ function replaceAddButton(id) {
 }
 
 function removeFromGroupList(id, tellServer) {
-    var trackIndex = findTrackById(id);
-    if (tellServer)
-        socket.emit('removeTrack', { id: id });
     if (idAlreadyExists(id)) {
-        groupList.splice(trackIndex, 1);
-  
+        var trackIndex = findTrackById(id);
+        if (tellServer)
+            socket.emit('removeTrack', { id: id });
+    
         if (groupList[trackIndex].username == nick) {
             $('#well' + id + '').fadeOut();
+            $('#well' + id + '').remove();
             var button = $('#' + id + '').find('.glyphicon-remove-sign');
-            button.removeAttr('class').addClass('glyphicon glyphicon-plus-sign');
-            button.unbind().click(function () { handleAdd($this); });
+            button.removeAttr('class').addClass('glyphicon glyphicon-plus-sign addButton');
+            button.unbind().click(function () { handleAdd($(this)); });
         }
+        groupList.splice(trackIndex, 1);
     }
 }
