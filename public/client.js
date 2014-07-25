@@ -87,8 +87,8 @@ socket.on('currentGroupList', function (data) {
         for (i in groupList) {
             $('#groupList').append(groupListItem(groupList[i]));
         }
-        $('.upVote').unbind("click").click(function () { upVote(event); });
-        $('.downVote').unbind("click").click(function () { downVote(event); });
+        $('.upVote').unbind("click").click(function () { upVote($(this)); });
+        $('.downVote').unbind("click").click(function () { downVote($(this)); });
     }
 });
 
@@ -347,6 +347,7 @@ function handleAdd($target) {
                 $('#groupList').append(groupListItem(newTrack));
                 $('.upVote').unbind("click").click(function () { upVote($(this)); });
                 $('.downVote').unbind("click").click(function () { downVote($(this)); });
+                $('.wellRemove').unbind("click").click(function () { wellRemove($(this)); });
                 groupList.push(newTrack);
                 socket.emit('newTrack', newTrack);
             }
@@ -357,13 +358,18 @@ function handleAdd($target) {
 }
 
 function groupListItem(track) {
+    var userTrack = (track.username == nick); // TODO: if(userTrack) 
     var art = (track.artwork_url == null)? "noCover.png" : track.artwork_url;
     var index = (track.index == null)? 0 : track.index;
-    var item =  '<div class="well well-sm" id="well' + track.id + '">' +
-                    '<div class="media">' +
-                        '<div class="indexContainer pull-left"><div id="index'+track.id+'">'+ index +'</div></div>' +
-                        '<a class="pull-left" href="#">' +
-                            '<img class="media-object" src="'+ art +'" alt="">' +
+    var item = '<div class="well well-sm" id="well' + track.id + '">';
+        if (userTrack) {
+            item += '<div class="media userTrack">';
+        } else {
+            item += '<div class="media">';
+        }  
+                item += '<div class="indexContainer pull-left"><div id="index' + track.id + '">' + index + '</div></div>' +
+                        '<a class="pull-left">' +
+                            '<img class="media-object" src="' + art + '" alt="">' +
                         '</a>' +
                         '<div class="media-body">' +
                             '<div class="row">' +
@@ -375,14 +381,24 @@ function groupListItem(track) {
                                 '</div>' +
                                 '<div id="voteConsole">' +
                                     '<span class="glyphicon glyphicon-chevron-up upVote"></span>' +
-                                    '<div class="score" id="score' + track.id + '">'+ track.score +'</div>' +
+                                    '<div class="score" id="score' + track.id + '">' + track.score + '</div>' +
                                     '<span class="glyphicon glyphicon-chevron-down downVote"></span>' +
                                 '</div>' +
-                            '</div>' +
-                        '</div>' +
+                            '</div>';
+                if (userTrack) { 
+                    item += '<div class="row">' +
+                                '<div id="removeDiv" class="col-xs-12"><span class="glyphicon glyphicon-remove-sign wellRemove"></span></div>' +
+                            '</div>'
+                            }
+                 item += '</div>' +
                     '</div>' +
                 '</div>';
     return item;
+}
+
+function wellRemove($target) { 
+    var id = parseInt($target.parents().eq(4).attr('id').replace('well', ''));
+    socket.emit('removeTrack', { id: id });
 }
 
 function footerPlay() {
