@@ -8,6 +8,8 @@ socket.on('newConnection', function (data) {
     $('.online').text(connected);
 });
 
+socket.on('newUser', function (data) { handleNewUser(data); });
+
 // ----------------------------------------------------------------------------------
 // -                               Chat Functions                                   -
 // ----------------------------------------------------------------------------------
@@ -44,13 +46,24 @@ function sendUser() {
         $("#errorDiv").effect("shake", { times: 1 }, 'fast');
     }
     else {
-        $('.username').text(nick);
         var msg = nick + " has joined the chat";
-        socket.emit('send', { type: 'notice', message: msg, username: nick });
-        $.modal.close();
-        $('#username').val('');
+        socket.emit('newUser', { type: 'notice', message: msg, username: nick });
     }
     return false;
+}
+
+function handleNewUser(error) {
+    if (error == null) {
+        $.modal.close();
+        $('#username').val('');
+        $('.username').text(nick);
+        renderGroupList();
+    }
+    else {
+        $('#errorDiv').show();
+        $("#errorDiv").text(error);
+        $("#errorDiv").effect("shake", { times: 1 }, 'fast');
+    }
 }
 
 function sendMsg(event) {

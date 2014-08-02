@@ -63,11 +63,24 @@ io.sockets.on('connection', function (socket) {
         }
     });
     
+
     socket.on('removeTrack', function (data) {
         var removedIndex = findTrackById(data.id);
         updateTrailingindices(removedIndex + 1, groupList[removedIndex].index);
         groupList.splice(removedIndex, 1);
         io.sockets.emit('removeTrack', data);
+    });
+    
+    socket.on('newUser', function (data) {
+        var error = null;
+        if (usernameExists(data.username)) {
+            error = 'The user name "' + data.username + '" has already been taken.';
+            socket.emit('newUser', error);
+        }
+        else {
+            this.username = data.username;
+            socket.emit('newUser', error);
+        }
     });
 
     socket.on('loadMore', function (data) {
@@ -125,13 +138,14 @@ function idAlreadyExists(id) {
 function handleVote(data) { 
     var voteState;
     var track = groupList[findTrackById(data.id)];
-    var oldVoteState = findVote(track, username);
-    if (data.type == 'upvote') {
+    var oldVoteState = getVote(track, data.username);
+    if (data.type == 'upVote') {
         switch (oldVoteState) {
             case -1:
                 track.score += 2;
                 voteState = 1;
                 break;
+            case -2:
             case 0:
                 track.score += 1;
                 voteState = 1;
@@ -148,6 +162,7 @@ function handleVote(data) {
                 track.score += 1;
                 voteState = 0;
                 break;
+            case -2:
             case 0:
                 track.score -= 1;
                 voteState = -1;
@@ -161,25 +176,37 @@ function handleVote(data) {
 
     setVotes(track, data.username, voteState);
     organizeGroupList();
-    io.sockets.emit('vote', { id: track.id, score: track.score, voteState: voteState });
+    io.sockets.emit('vote', { id: track.id, score: track.score, votes: track.votes, username: data.username });
 }
 
-function setVotes(track, username, votestate) {
-    var voteIndex = findVote(track, username);
+function setVotes(track, username, voteState) {
+    var voteIndex = getVoteIndex(track, username);
     if (voteIndex == -1) {
-        track.votes.push({usename: username, voteState: voteState});
+        track.votes.push({username: username, voteState: voteState});
     }
     else { 
         track.votes[voteIndex].voteState = voteState;
     }
 }
 
-function findVote(track, username) {
+// returns voteState for track by user
+function getVote(track, username) {
     for (i in track.votes) {
         if (track.votes[i].username == username)
             return track.votes[i].voteState;
     }
-    return 0;
+    // vote does not exist -> return -2 because -1 denotes negative vote
+    return -2;
+}
+
+// returns index of vote in a specific track's votes list by user
+function getVoteIndex(track, username) {
+    for (i in track.votes) {
+        if (track.votes[i].username == username)
+            return i;
+    }
+    // vote does not exist -> return -1
+    return -1;
 }
 
 function findTrackById(id) {
@@ -220,4 +247,11 @@ function compareTracks(a, b) {
     if (a.score > b.score)
         return -1;
     return 0;
+}
+
+function usernameExists(username) {
+    for (u in users)
+        if (users[u].username == username)
+            return true;
+    return false;
 }

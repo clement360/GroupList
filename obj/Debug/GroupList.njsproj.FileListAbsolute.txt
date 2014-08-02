@@ -932,7 +932,6 @@ C:\Users\Miguel\WebStorm\GroupList\obj\Debug\README.md
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\public\osx.css
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\public\styles.css
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\public\knit.png
-C:\Users\Miguel\WebStorm\GroupList\obj\Debug\public\wall.png
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\express\.npmignore
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\express\History.md
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\express\index.js

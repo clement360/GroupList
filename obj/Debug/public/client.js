@@ -48,14 +48,15 @@ socket.on('currentGroupList', function (data) {
     if (data.length > 0) {
         $('#groupListPlaceHolder').hide();
         groupList = data;
-        renderGroupList();
     }
 });
 
 socket.on('newTrack', function (data) {
     $('#groupListPlaceHolder').hide();
-    if (data.username == nick)
+    if (data.username == nick) {
         updateIndex(data.id, data.index);
+        updateScore(data.id, data.score);
+    }
     if (!idAlreadyExists(data.id)) {
         groupList.push(data);
         renderGroupList();
@@ -64,7 +65,7 @@ socket.on('newTrack', function (data) {
 
 socket.on('vote', function (data) {
     updateScore(data.id, data.score);
-    updateVoteState();
+    groupList[findTrackById(data.id)].votes = data.votes;
     organizeGroupList();
 });
 
@@ -85,11 +86,14 @@ function searchSoundCloud(skip) {
     query = $('#search').val();
     var track = null;
     
-    
     if (query.length > 2 || skip) {
-        $('#sounds').html('');
+        $('#sounds').html($('#loading').html());
+        $('.spinner :first').show();
         SC.get('/tracks', { q: query, limit: 25 }, function (tracks) {
-            for (i in tracks) {
+            $('#sounds').html('');
+            if (tracks == null)
+                $('#sounds').append('<li><center style="color: #777;">No tracks found for "'+query+'".</center></li>'); 
+           for (i in tracks) {
                 if (tracks[i].streamable == true)
                     $('#sounds').append(searchResultItem(tracks[i]));
             }
@@ -287,23 +291,34 @@ function updateScore(id, score) {
     $('#score' + id + '').text(score);
 }
 
-function updateVoteState(id, voteState) {
-    groupList[findTrackById(id)].voteState = voteState;
-    var $scoreDiv = $('#score' + voteState + '');
-    var $upVote = $scoreDiv.parent().children('.upVote');
-    var $downVote = $scoreDiv.parent().children('.downVote');
-    $upVote.removeClass('selectedVote');
-    $downVote.removeClass('selectedVote');
-    switch (voteState) {
-        case -1:
-            $downVote.addClass('selectedVote');
-            break;
-        case 0:
-            break;
-        case 1:
-            $upVote.addClass('selectedVote');
-            break;
+function updateVoteHiglights() {
+    for (i in groupList) {
+        userVote = getUserVote(groupList[i], nick);
+        if (userVote != null) {
+            var $scoreDiv = $('#score' + groupList[i].id + '');
+            var $upVote = $scoreDiv.parent().children('.upVote');
+            var $downVote = $scoreDiv.parent().children('.downVote');
+            $upVote.removeClass('selectedVote');
+            $downVote.removeClass('selectedVote');
+            switch (userVote.voteState) {
+                case -1:
+                    $downVote.addClass('selectedVote');
+                    break;
+                case 0:
+                    break;
+                case 1:
+                    $upVote.addClass('selectedVote');
+                    break;
+            }
+        }
     }
+}
+
+function getUserVote(track, username) {
+    for (v in track.votes)
+        if (track.votes[v].username == username)
+            return track.votes[v];
+    return null;
 }
 
 function replaceAddButton(id) {
@@ -346,7 +361,6 @@ function organizeGroupList() {
     for (var i = 0; i < groupList.length; i++) {
         groupList[i].index = i + 1;
     }
-    clearGroupList();
     renderGroupList();
 }
 
@@ -366,4 +380,5 @@ function renderGroupList() {
     $('.upVote').unbind("click").click(function () { upVote($(this)); });
     $('.downVote').unbind("click").click(function () { downVote($(this)); });
     $('.wellRemove').unbind("click").click(function () { wellRemove($(this)); });
+    updateVoteHiglights();
 }
