@@ -17,6 +17,7 @@ body {
     margin-left:auto;
 }
 
+
 .header{
     background-image: linear-gradient(#f9f9f9, #f3f3f3);
     background-repeat: repeat-x;
@@ -236,6 +237,12 @@ footer {
     box-shadow: 0 0 0px 3px #CC5A5A;
 }
 
+#soundFooter > .container {
+    position: relative;
+}
+
+
+
 #submit:hover {
     opacity: .5;
 }
@@ -355,6 +362,18 @@ hr {
     height: 50px;
     font-size: 27px;
     background: linear-gradient(to bottom, rgba(207, 207, 207, 0.58) 0%,rgba(134, 134, 134, 0.54) 100%);
+    position: absolute;
+    z-index: 1;
+    width: inherit;
+}
+
+.positionBar{
+    border-radius: 5px;
+    height: 50px;
+    background-color: rgba(38, 221, 82, 0.61);
+    position: absolute;
+    z-index: 0;
+    width: 0%;
 }
 
 .playControl{
