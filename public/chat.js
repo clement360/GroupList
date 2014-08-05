@@ -1,12 +1,11 @@
 var nick = '[Client]';
 var users = [];
-var colors = ['#00FFC7','#FE0000','#00FF01','#FFDA65','#5EAE4F','#FF74A3','#727273','#FF937E','#FF937E','#BF986F','#0E4CA1','#9D008D','#620F01'];
 var connected = 0;
-var oldestMessageID = 0;
+var oldestMessageIndex = 0;
 var colorIndex = 0;
 
 socket.on('userConnection', function (data) {
-    users.push({ username : data.username, color : assignColor()});
+    users.push(data);
     renderUserList();
     $('.online').text(users.length);
 });
@@ -17,10 +16,7 @@ socket.on('userDisconnection', function (data) {
     $('.online').text(users.length);
 });
 
-socket.on('currentUsernames', function (data) {
-    for (u in data)
-        users.push({ username : data[u], color : assignColor() });
-});
+socket.on('currentUsernames', function (data) { users = data; });
 
 socket.on('newUser', function (data) { handleNewUser(data); });
 
@@ -29,16 +25,17 @@ socket.on('newUser', function (data) { handleNewUser(data); });
 // ----------------------------------------------------------------------------------
 
 socket.on('recentMessages', function (data) {
-    oldestMessageID += data.lastTwenty.length;
-    (oldestMessageID > 21) ? prependMessages(data.lastTwenty, false, data.sentAll) : prependMessages(data.lastTwenty, true, data.sentAll);
+    if(data.lastTwenty.length > 0)
+        oldestMessageIndex = data.lastTwenty[data.lastTwenty.length - 1].index;
+    prependMessages(data.lastTwenty, data.sentAll);
 });
 
 socket.on('message', function (data) {
     if (data.type == 'chat') {
         if (data.nick == nick)
-            $('#chats').append('<div class="me"><div>' + data.message + '</div></div>');
+            $('#chats').append('<div class="me"><div '+userColor(data.color)+'>' + data.message + ' - ' + '<strong>Me</strong></div></div>');
         else
-            $('#chats').append('<div class="others"><div>' + data.message + ' - ' + '<strong>' + data.nick + '</strong></div></div>');
+            $('#chats').append('<div class="others"><div ' + userColor(data.color) + '>' + data.message + ' - ' + '<strong>' + data.nick + '</strong></div></div>');
     }
     else if (data.type == "notice") {
         $('#chats').append($('<div>').html('<div class="notice">' + data.message));
@@ -122,7 +119,7 @@ function chat_command(cmd, arg) {
     }
 }
 
-function prependMessages(messages, scrollDown, sentAll) {
+function prependMessages(messages, sentAll) {
     if (!$(".loadButton")[0]) {
         $('#chats').prepend('<div class="loadButton"><span class="glyphicon glyphicon-chevron-up"></span> Load More <span class="glyphicon glyphicon-chevron-up"></span></div>');
         $(".loadButton").unbind().click(function () { loadMoreMessages(); });
@@ -139,18 +136,15 @@ function prependMessages(messages, scrollDown, sentAll) {
             var message = messages[i];
             if (message.type == 'chat') {
                 if (message.nick == nick)
-                    $('#chats').prepend('<div class="me"><div>' + message.message + '</div></div>');
+                    $('#chats').prepend('<div class="me"><div ' + userColor(message.color) + '>' + message.message + ' - ' + '<strong>Me</strong></div></div>');
                 else
-                    $('#chats').prepend('<div class="others"><div>' + message.message + ' - ' + '<strong>' + message.nick + '</strong></div></div>');
+                    $('#chats').prepend('<div class="others"><div ' + userColor(message.color) + '>' + message.message + ' - ' + '<strong>' + message.nick + '</strong></div></div>');
             }
             else if (message.type == "notice") {
                 $('#chats').prepend($('<div>').html('<div class="notice">' + message.message));
             }
         }
-        if (scrollDown)
-            scrollToBottom();
-        else
-            scrollToTop();
+
         if (sentAll) {
             $('#chats').prepend('<div class="loadButton">No Previous Messages To Load</div>');
             $('.loadButton').addClass("unavailable");
@@ -164,7 +158,7 @@ function prependMessages(messages, scrollDown, sentAll) {
 
 function loadMoreMessages() {
     // get 20 more messages starting with the one older than the top message
-    socket.emit('loadMore', { start: oldestMessageID + 1 });
+    socket.emit('loadMore', { start: oldestMessageIndex - 1});
 }
 
 function scrollToBottom() {
@@ -268,8 +262,6 @@ function compareUsers(a, b) {
     return 0;
 }
 
-function assignColor() {
-    if (colorIndex >= colors.length)
-        colorIndex = 0;
-    return colors[colorIndex++];
+function userColor(color) {
+    return 'style="box-shadow: 0 0 1px 2px ' + color + ';"';
 }

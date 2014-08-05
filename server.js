@@ -15,40 +15,34 @@ var users = [];
 var userID = 0;
 var messages = [];
 var messageIndex = 0;
+var colorIndex = 0;
 var groupList = [];
+var colors = ['red','orange','yellow','green','blue'];
 
 io.sockets.on('connection', function (socket) {
-    userID++;
-    socket.userID = userID;
-    socket.username = "[placeHolder]";
-    users.push(socket);
-    var initialMessages = lastTwentyMessages(0);
     
-    //Send Initial data
-    socket.emit('recentMessages', { lastTwenty: initialMessages.twenty, sentAll: initialMessages.sentAllMessages });
-    socket.emit('currentGroupList', groupList);
+    
     
     //make this a running list later
     var usernames = [];
     for (u in users) 
-        if(users[u].username != '[placeHolder]')
-            usernames.push(users[u].username);
+        if(users[u].username != '[placeHolder]' && users[u].connected)
+            usernames.push({ username: users[u].username, color: users[u].color});
     
     socket.emit('currentUsernames', usernames);
 
     socket.on('send', function (data) {
-        console.log("\nSocketID: " + socket.userID);
         if(data.type == 'notice'){
             users[userIndex(this.userID)].username = data.username;
         }
-                
+        data.color = this.color;        
         messages.push(data);
         io.sockets.emit('message', data);
     });
 
     socket.on('disconnect', function () { 
         io.sockets.emit('userDisconnection', { username: this.username });
-        users.splice(userIndex(this.userID), 1);
+        //users.splice(userIndex(this.userID), 1);
     });
     
     socket.on('reset', function () {
@@ -77,25 +71,35 @@ io.sockets.on('connection', function (socket) {
     
     socket.on('newUser', function (data) {
         var error = null;
-        if (usernameExists(data.username)) {
+        if (usernameExistsAndConnected(data.username)) {
             error = 'The user name "' + data.username + '" has already been taken.';
             socket.emit('newUser', error);
         }
         else {
-            this.username = data.username;
+            userID++;
+            socket.userID = userID;
+            socket.username = data.username;
+            socket.color = assignColor();
+            users.push(socket);
             socket.emit('newUser', error);
+
         }
     });
     
     socket.on('userConnected', function () {
-        io.sockets.emit('userConnection', { username: this.username });
+        io.sockets.emit('userConnection', { username: this.username, color: this.color });
+        var initialMessages = lastTwentyMessages(messages.length - 1);
+        
+        //Send Initial data
+        socket.emit('recentMessages', { lastTwenty: initialMessages.twenty, sentAll: initialMessages.sentAll });
+        socket.emit('currentGroupList', groupList);
     });
 
     socket.on('loadMore', function (data) {
         var loadedMessages = lastTwentyMessages(data.start);
         socket.emit('recentMessages', {
             lastTwenty: loadedMessages.twenty,
-            sentAll: loadedMessages.sentAllMessages
+            sentAll: loadedMessages.sentAll
         });
     });
     
@@ -121,19 +125,23 @@ function userIndex(id) {
 function lastTwentyMessages(start) {
     var result = [];
     var prev;
-    var x = start;
-    for (; x <= start + 20; x++) {
-        prev = messages[messages.length - x - 1];
+    var x = 0;
+    var oldestIndex = 1;
+    for (; x <= 20; x++) {
+        prev = messages[start - x];
+        
         if (prev == null)
             break;
-        else
+        else{
+            prev.index = start - x;
             result.push(prev);
+        }
     }
-
-    return {
-        twenty: result,
-        sentAllMessages: (messageIndex == -1)
-    };
+    if (result.length > 0)
+        oldestIndex = result[result.length - 1].index;
+    if (start == -1)
+        oldestIndex = 0;
+    return {twenty: result, sentAll: oldestIndex == 0};
 }
 
 function idAlreadyExists(id) {
@@ -257,9 +265,23 @@ function compareTracks(a, b) {
     return 0;
 }
 
-function usernameExists(username) {
+function usernameExistsAndConnected(username) {
+    for (u in users)
+        if (users[u].username == username && users[u].connected)
+            return true;
+    return false;
+}
+
+function assignColor() {
+    if (colorIndex >= colors.length)
+        colorIndex = 0;
+    var color = colors[colorIndex];
+    colorIndex++;
+    return color;
+}
+
+function getUserIfExists() {
     for (u in users)
         if (users[u].username == username)
             return true;
-    return false;
 }
