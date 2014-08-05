@@ -192,11 +192,14 @@ function footerPlay() {
         $('#footPlay').attr('class', 'glyphicon glyphicon-play');
         $currentlyPlayingSpan.parent().removeAttr('style');
         currentlyPlaying.pause();
+        $('.positionBar').clearQueue();
+        $('.positionBar').stop();
     }
     else {
         $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-stop');
         $('#footPlay').attr('class', 'glyphicon glyphicon-pause');
         currentlyPlaying.play();
+        $('.positionBar').animate({ width: "100%" }, currentlyPlaying.duration-currentlyPlaying.position)
     }
 }
 
@@ -219,7 +222,16 @@ function playTrack($target) {
     $currentlyPlayingSpan = $target;
     id = $target.parent().parent().attr('id');
     SC.stream("/tracks/" + id, 
-        { limit: 30, onfinish: function () { stopTrack(); } },
+        {
+            limit: 30, 
+            onfinish: function () { stopTrack(); }, 
+            onload: function () {
+                if (this.readyState == 2) {
+                alert('this song failed to load 404');
+                }
+                $('.positionBar').animate({ width: "100%" }, this.duration)
+            }
+        },
         function (sound) {
         currentlyPlaying = sound;
         currentlyPlaying.play();
@@ -234,6 +246,9 @@ function stopTrack() {
     $('#footPlay').attr('class', 'glyphicon glyphicon-play');
     $currentlyPlayingSpan.parent().removeAttr('style');
     currentlyPlaying.stop();
+    $('.positionBar').clearQueue();
+    $('.positionBar').stop();
+    $('.positionBar').css('width', '0%');
     currentlyPlaying = null;
 }
 
@@ -373,7 +388,8 @@ function compareTracks(a, b) {
 }
 
 function renderGroupList() {
-    $('#groupList').html('');
+    if (groupList.length > 0)
+        $('#groupList').html('');
     for (i in groupList) {
         $('#groupList').append(groupListItem(groupList[i]));
     }

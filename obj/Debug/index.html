@@ -37,94 +37,114 @@
             </div>
         </div>
     </div>
-
-    <div id="carousel" class="carousel slide">
-        <div class="carousel-inner">
-            <div id="chatPane" class="item">
-                <!-- Chat Pane -->
-                <ul id="chats"></ul>
-                <footer>
+    
+        <div id="carousel" class="carousel slide">
+            <div class="carousel-inner">
+                <div id="chatPane" class="item">
+                    <!-- Chat Pane -->
                     <div class="container">
-                        <textarea id="m" placeholder="Write something..."></textarea>
-                        <input type="submit" id="submit" autocomplete="off" placeholder="Username" onclick="sendMsg();" />
-                    </div>
-                </footer>
-            </div>
-            <div id="soundPane" class="item active">
-                <!-- Music Pane -->
-                <div id="row" class="row">
-                    <div class="col-md-7">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h3>Group List <small>current playlist</small></h3></div>
-                            <div class="panel-body">
-                                <ul id="groupList" class="list-group">
-                                    <!-- groupList goes here -->
-                                    <li id="groupListPlaceHolder"><h5>Selected songs go here.</h5></li>
+                        <div class="row">
+                            <div id="userListCol" class="col-sm-2 hidden-xs">
+                                <ul id="onlineUsersList" class="list-group">
+                                    <li class="list-group-item">Cras justo odio</li>
+                                    <li class="list-group-item">Dapibus ac facilisis in</li>
+                                    <li class="list-group-item">Morbi leo risus</li>
+                                    <li class="list-group-item">Porta ac consectetur ac</li>
+                                    <li class="list-group-item">Vestibulum at eros</li>
                                 </ul>
+                            </div>
+                            <div class="col-sm-10">
+                                <ul id="chats"></ul>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-5">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h3>Add Songs <small>Search SoundCloud</small></h3></div>
-                            <div class="panel-body">
-                                <ul id="sounds" class="list-group">
-                                    <!-- song results go here -->
-                                    <li><center style="color: #777;">Search SoundCloud with the search box above.</center></li>
-                                </ul>
+                    <footer>
+                        <div class="container">
+                            <textarea id="m" placeholder="Write something..."></textarea>
+                            <input type="submit" id="submit" autocomplete="off" placeholder="Username" onclick="sendMsg();" />
+                        </div>
+                    </footer>
+                </div>
+                <div id="soundPane" class="item active">
+                    <!-- Music Pane -->
+                    <div class="container">
+                        <div id="row" class="row">
+                            <div class="col-md-7">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading"><h3>Group List <small>current playlist</small></h3></div>
+                                    <div class="panel-body">
+                                        <ul id="groupList" class="list-group">
+                                            <!-- groupList goes here -->
+                                            <li id="groupListPlaceHolder"><h5>Selected songs go here.</h5></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading"><h3>Add Songs <small>Search SoundCloud</small></h3></div>
+                                    <div class="panel-body">
+                                        <ul id="sounds" class="list-group">
+                                            <!-- song results go here -->
+                                            <li><center style="color: #777;">Search SoundCloud with the search box above.</center></li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <footer id="soundFooter">
-                    <div class="container">
-                       <div class="playBar row">
-                           <div class="col-xs-1 playControl"><span id="footPrev" class="glyphicon glyphicon-step-backward"></span></div>
-                           <div class="col-xs-1 playControl"><span id="footPlay" class="glyphicon glyphicon-play"></span></div>
-                           <div class="col-xs-1 playControl"><span id="footNext" class="glyphicon glyphicon-step-forward"></span></div>
-                           <div id="trackInfo" class="col-xs-9">
+                        <footer id="soundFooter">
+                            <div class="container">
+                                <div class="playBar row">
+                                    <div class="col-xs-1 playControl"><span id="footPrev" class="glyphicon glyphicon-step-backward"></span></div>
+                                    <div class="col-xs-1 playControl"><span id="footPlay" class="glyphicon glyphicon-play"></span></div>
+                                    <div class="col-xs-1 playControl"><span id="footNext" class="glyphicon glyphicon-step-forward"></span></div>
+                                    <div id="trackInfo" class="col-xs-9">
 
-                           </div>
-                       </div>
+                                    </div>
+                                </div>
+                                <div class="positionBar row">
+                                </div>
+                            </div>
+                        </footer>
                     </div>
-                </footer>
+            </div>
+
+            <!-- Carousel Controls -->
+            <a id="left" class="left carousel-control" href="#carousel" role="button" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+            </a>
+            <a id="right" class="right carousel-control" href="#carousel" role="button" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right"></span>
+            </a>
+        </div>
+    </div>
+
+
+        <!-- modal content -->
+        <div id="osx-modal-content">
+            <div id="osx-modal-title">Welcome to Group list</div>
+            <div id="osx-modal-data">
+                <center>
+                    <h3>Enter in a Username</h3>
+                    <div>
+                        <input type="text" placeholder="Username" id="username" autofocus>
+                    </div>
+                    <div id="errorDiv" hidden>You need a username!</div>
+                </center>
             </div>
         </div>
 
-        <!-- Carousel Controls -->
-        <a id="left" class="left carousel-control" href="#carousel" role="button" data-slide="prev">
-            <span class="glyphicon glyphicon-chevron-left"></span>
-        </a>
-        <a id="right" class="right carousel-control" href="#carousel" role="button" data-slide="next">
-            <span class="glyphicon glyphicon-chevron-right"></span>
-        </a>
-    </div>
-    
-    
-     <!-- modal content -->
-    <div id="osx-modal-content">
-        <div id="osx-modal-title">Welcome to Group list</div>
-        <div id="osx-modal-data">
-            <center>
-                <h3>Enter in a Username</h3>
-                <div>
-                    <input type="text" placeholder="Username" id="username" autofocus>
-                </div>
-                <div id="errorDiv" hidden>You need a username!</div>
-            </center>
+        <!-- loading animation -->
+        <div id="loading">
+            <div class="spinner">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+            </div>
         </div>
-    </div>
-
-    <!-- loading animation -->
-    <div id="loading">
-        <div class="spinner">
-            <div class="rect1"></div>
-            <div class="rect2"></div>
-            <div class="rect3"></div>
-            <div class="rect4"></div>
-            <div class="rect5"></div>
-        </div>
-    </div>
 
 </body>
 </html>

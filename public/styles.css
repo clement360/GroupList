@@ -141,6 +141,10 @@ body {
 
 /*----- Chats -----*/
 
+#userListCol{
+    padding-right:0px;
+}
+
 .me {
     text-align: right;
 }
@@ -362,7 +366,6 @@ hr {
     height: 50px;
     font-size: 27px;
     background: linear-gradient(to bottom, rgba(207, 207, 207, 0.58) 0%,rgba(134, 134, 134, 0.54) 100%);
-    position: absolute;
     z-index: 1;
     width: inherit;
 }
@@ -370,10 +373,10 @@ hr {
 .positionBar{
     border-radius: 5px;
     height: 50px;
-    background-color: rgba(38, 221, 82, 0.61);
-    position: absolute;
+    background-color: #CC5A5A;
     z-index: 0;
     width: 0%;
+    margin-top: -50px;
 }
 
 .playControl{

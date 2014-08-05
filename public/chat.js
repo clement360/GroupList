@@ -1,11 +1,25 @@
 var nick = '[Client]';
-
+var users = [];
+var colors = ['#00FFC7','#FE0000','#00FF01','#FFDA65','#5EAE4F','#FF74A3','#727273','#FF937E','#FF937E','#BF986F','#0E4CA1','#9D008D','#620F01'];
 var connected = 0;
 var oldestMessageID = 0;
+var colorIndex = 0;
 
-socket.on('newConnection', function (data) {
-    connected = data.users;
-    $('.online').text(connected);
+socket.on('userConnection', function (data) {
+    users.push({ username : data.username, color : assignColor()});
+    renderUserList();
+    $('.online').text(users.length);
+});
+
+socket.on('userDisconnection', function (data) {
+    users.splice(userIndex(data.username), 1);
+    renderUserList();
+    $('.online').text(users.length);
+});
+
+socket.on('currentUsernames', function (data) {
+    for (u in data)
+        users.push({ username : data[u], color : assignColor() });
 });
 
 socket.on('newUser', function (data) { handleNewUser(data); });
@@ -58,6 +72,7 @@ function handleNewUser(error) {
         $('#username').val('');
         $('.username').text(nick);
         renderGroupList();
+        socket.emit('userConnected');
     }
     else {
         $('#errorDiv').show();
@@ -153,12 +168,12 @@ function loadMoreMessages() {
 }
 
 function scrollToBottom() {
-    if($('.active').index() == -1)
+    if($('.active').index() == 0)
         $("html, body").animate({ scrollTop: $(document).height() - $(window).height() }, 500);
 }
 
 function scrollToTop() {
-    if ($('.active').index() == -1)
+    if ($('.active').index() == 0)
         $("html, body").animate({ scrollTop: 0 }, 1000);
 }
 
@@ -227,4 +242,34 @@ function deleteServerLog() {
     socket.emit('reset');
     $('#chats').html('');
     $('#groupList').html('<li id="groupListPlaceHolder"><h5>Selected songs go here.</h5></li>');
+}
+
+function userIndex(username) {
+    for (var r = 0; r < users.length; r++)
+        if (users[r].username == username)
+            return r;
+    console.log("Error: user with username (" + username + ") not found.")
+    return -1;
+}
+
+function renderUserList() {
+    users.sort(compareUsers);
+    $('#onlineUsersList').html('');
+    for (u in users) { 
+        $('#onlineUsersList').append('<li class="list-group-item" style="background-color: '+users[u].color+'">' + users[u].username + '</li>');
+    }
+}
+
+function compareUsers(a, b) {
+    if (a.username < b.username)
+        return -1;
+    if (a.username > b.username)
+        return 1;
+    return 0;
+}
+
+function assignColor() {
+    if (colorIndex >= colors.length)
+        colorIndex = 0;
+    return colors[colorIndex++];
 }

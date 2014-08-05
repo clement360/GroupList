@@ -388,7 +388,8 @@ function compareTracks(a, b) {
 }
 
 function renderGroupList() {
-    $('#groupList').html('');
+    if (groupList.length > 0)
+        $('#groupList').html('');
     for (i in groupList) {
         $('#groupList').append(groupListItem(groupList[i]));
     }

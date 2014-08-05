@@ -18,8 +18,6 @@ var messageIndex = 0;
 var groupList = [];
 
 io.sockets.on('connection', function (socket) {
-
-    console.log("User Connected");
     userID++;
     socket.userID = userID;
     socket.username = "[placeHolder]";
@@ -29,6 +27,14 @@ io.sockets.on('connection', function (socket) {
     //Send Initial data
     socket.emit('recentMessages', { lastTwenty: initialMessages.twenty, sentAll: initialMessages.sentAllMessages });
     socket.emit('currentGroupList', groupList);
+    
+    //make this a running list later
+    var usernames = [];
+    for (u in users) 
+        if(users[u].username != '[placeHolder]')
+            usernames.push(users[u].username);
+    
+    socket.emit('currentUsernames', usernames);
 
     socket.on('send', function (data) {
         console.log("\nSocketID: " + socket.userID);
@@ -41,10 +47,8 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('disconnect', function () { 
-        io.sockets.emit('message', { type: 'notice', message: this.username + " has left the chat" });
-        messages.push({ type: 'notice', message: this.username + " has left the chat" });
+        io.sockets.emit('userDisconnection', { username: this.username });
         users.splice(userIndex(this.userID), 1);
-        io.sockets.emit('newConnection', { users: users.length });
     });
     
     socket.on('reset', function () {
@@ -82,6 +86,10 @@ io.sockets.on('connection', function (socket) {
             socket.emit('newUser', error);
         }
     });
+    
+    socket.on('userConnected', function () {
+        io.sockets.emit('userConnection', { username: this.username });
+    });
 
     socket.on('loadMore', function (data) {
         var loadedMessages = lastTwentyMessages(data.start);
@@ -95,7 +103,7 @@ io.sockets.on('connection', function (socket) {
         handleVote(data);
     });
 
-    io.sockets.emit('newConnection', { users: users.length });
+    
 });
 
 http.listen(3000, function () {
@@ -107,7 +115,7 @@ function userIndex(id) {
         if (users[r].userID == id)
             return r;
     console.log("Error: user with id ("+id+") not found.")
-    return 0;
+    return -1;
 }
 
 function lastTwentyMessages(start) {
