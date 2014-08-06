@@ -20,9 +20,7 @@ var groupList = [];
 var colors = ['red','orange','yellow','green','blue'];
 
 io.sockets.on('connection', function (socket) {
-    
-    
-    
+
     //make this a running list later
     var usernames = [];
     for (u in users) 
@@ -73,16 +71,28 @@ io.sockets.on('connection', function (socket) {
         var error = null;
         if (usernameExistsAndConnected(data.username)) {
             error = 'The user name "' + data.username + '" has already been taken.';
-            socket.emit('newUser', error);
+            socket.emit('newUser', {error: error, username: null});
         }
         else {
-            userID++;
-            socket.userID = userID;
-            socket.username = data.username;
-            socket.color = assignColor();
-            users.push(socket);
-            socket.emit('newUser', error);
-
+            // error is null for all these cases
+            var temp = getUserIfExists(data.username);
+            if (temp == null) {
+                userID++;
+                socket.userID = userID;
+                socket.username = data.username;
+                socket.color = assignColor();
+                users.push(socket);
+                socket.emit('newUser', { error: null, username: null });
+            }
+            else {
+                // in this case the user is returning so we bind their user info to the new socket
+                socket.userID = temp.socket.userID;
+                socket.color = temp.socket.color;
+                // we only keep the original username's case
+                socket.username = temp.socket.username;
+                users[temp.index] = socket;
+                socket.emit('newUser', {error: null, username: socket.username});
+            }
         }
     });
     
@@ -267,7 +277,7 @@ function compareTracks(a, b) {
 
 function usernameExistsAndConnected(username) {
     for (u in users)
-        if (users[u].username == username && users[u].connected)
+        if (users[u].username.toLowerCase() == username.toLowerCase() && users[u].connected)
             return true;
     return false;
 }
@@ -280,3 +290,9 @@ function assignColor() {
     return color;
 }
 
+function getUserIfExists(username) {
+    for (u in users)
+        if (users[u].username.toLowerCase() == username.toLowerCase())
+            return { socket: users[u], index: u };
+    return null;
+}

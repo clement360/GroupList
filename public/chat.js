@@ -63,8 +63,10 @@ function sendUser() {
     return false;
 }
 
-function handleNewUser(error) {
-    if (error == null) {
+function handleNewUser(data) {
+    if (data.error == null) {
+        if (data.username != null)
+            nick = data.username;
         $.modal.close();
         $('#username').val('');
         $('.username').text(nick);
@@ -73,7 +75,7 @@ function handleNewUser(error) {
     }
     else {
         $('#errorDiv').show();
-        $("#errorDiv").text(error);
+        $("#errorDiv").text(data.error);
         $("#errorDiv").effect("shake", { times: 1 }, 'fast');
     }
 }
@@ -198,14 +200,12 @@ function openModal() {
                             200,
                             function () {
                             $("#osx-modal-data", self.container).show();
+                            $("#username").focus();
                         }
 );
                     }, 300);
                 });
             })
-            setTimeout(function () {
-                d.data.find("#username").focus();
-            }, 500);
         },
         close: function (d) {
             var self = this; // this = SimpleModal object
