@@ -3,8 +3,11 @@ var currentlyPlaying = null;
 var $currentlyPlayingSpan = null;
 var debugging = false;
 var groupList = [];
+var groupListPlaying = false;
+var playedList = [];
 
 $(document).ready(function () {
+    $('#soundFooter').hide();
     $('#username').bind('keypress', function (e) {
         if (e.keyCode == 13) {
             event.preventDefault();
@@ -48,8 +51,15 @@ socket.on('currentGroupList', function (data) {
     if (data.length > 0) {
         $('#groupListPlaceHolder').hide();
         groupList = data;
+        renderGroupList();
     }
 });
+
+socket.on('latestGoupList', function (data) {
+    groupList = data;
+    renderGroupList();
+});
+
 
 socket.on('newTrack', function (data) {
     $('#groupListPlaceHolder').hide();
@@ -71,6 +81,8 @@ socket.on('vote', function (data) {
 
 socket.on('removeTrack', function (data) {
     removeFromGroupList(data.id);
+    if (groupList.length == 0)
+        $('#playGroupListBtn').prop('disabled', true);
 });
 
 // ----------------------------------------------------------------------------------
@@ -89,6 +101,7 @@ function searchSoundCloud(skip) {
     if (query.length > 2 || skip) {
         $('#sounds').html($('#loading').html());
         $('.spinner :first').show();
+        $("#carousel").carousel(1);
         SC.get('/tracks', { q: query, limit: 25 }, function (tracks) {
             $('#sounds').html('');
             if (tracks == null)
@@ -99,7 +112,6 @@ function searchSoundCloud(skip) {
             }
             $('.playButton').unbind("click").click(function () { handlePlay($(this)); });
             $('.addButton').unbind("click").click(function () { handleAdd($(this)); });
-            $("#carousel").carousel(1);
         });
     }
 }
@@ -204,7 +216,10 @@ function footerPlay() {
 }
 
 function handlePlay($target) {
-    if (currentlyPlaying == null)
+    // groupListPlaying do Nothing
+    if (groupListPlaying)
+        alert("GroupList is currently playing.");
+    else if (currentlyPlaying == null)
         playTrack($target);
     else if (currentlyPlaying.playState == 0)
         playTrack($target);
@@ -221,9 +236,10 @@ function handlePlay($target) {
 function playTrack($target) {
     $currentlyPlayingSpan = $target;
     id = $target.parent().parent().attr('id');
+    $('#soundFooter').slideDown();
     SC.stream("/tracks/" + id, 
         {
-            limit: 30, 
+            limit: 1, 
             onfinish: function () { stopTrack(); }, 
             onload: function () {
                 if (this.readyState == 2) {
@@ -235,6 +251,7 @@ function playTrack($target) {
         function (sound) {
         currentlyPlaying = sound;
         currentlyPlaying.play();
+        
     });
     $target.attr('class', 'glyphicon glyphicon-stop');
     $currentlyPlayingSpan.parent().css("opacity", "1");
@@ -250,6 +267,7 @@ function stopTrack() {
     $('.positionBar').stop();
     $('.positionBar').css('width', '0%');
     currentlyPlaying = null;
+    $('#soundFooter').slideUp();
 }
 
 function runTime(ms) {
@@ -388,8 +406,10 @@ function compareTracks(a, b) {
 }
 
 function renderGroupList() {
-    if (groupList.length > 0)
+    if (groupList.length > 0) {
         $('#groupList').html('');
+        $('#playGroupListBtn').prop('disabled', false);
+    }
     for (i in groupList) {
         $('#groupList').append(groupListItem(groupList[i]));
     }
@@ -397,4 +417,39 @@ function renderGroupList() {
     $('.downVote').unbind("click").click(function () { downVote($(this)); });
     $('.wellRemove').unbind("click").click(function () { wellRemove($(this)); });
     updateVoteHiglights();
+}
+
+function playGroupList() {
+    groupListPlaying = true;
+    if(currentlyPlaying != null)
+        if (currentlyPlaying.playState > 0 || currentlyPlaying.paused)
+            currentlyPlaying.stop();
+    $('.positionBar').animate({ width: "0%" }, 100);
+    if (groupList.length <= 0) {
+        groupListPlaying = false;
+        stopTrack();
+
+        return true;
+    }
+    $('#playedListPanel').slideDown();
+    var nextSong = groupList.pop();
+    playedList.push(nextSong);
+
+    SC.stream("/tracks/" + nextSong.id, 
+        {
+        limit: 30, 
+        onfinish: function () { playGroupList(); }, 
+        onload: function () {
+            if (this.readyState == 2) {
+                alert('this song failed to load 404');
+            }
+            $('.positionBar').animate({ width: "100%" }, this.duration)
+        }
+    },
+        function (sound) {
+        currentlyPlaying = sound;
+        currentlyPlaying.play();
+        $('#soundFooter').slideDown();
+    });
+    $('#footPlay').attr('class', 'glyphicon glyphicon-pause');
 }

@@ -44,14 +44,7 @@
                     <!-- Chat Pane -->
                     <div class="container">
                         <div class="row">
-                            <div id="userListCol" class="col-sm-2 hidden-xs">
-                                <div id="onlineUsersPanel" class="panel panel-default">
-                                    <div class="panel-heading">Online Users</div>
-                                    <div class="panel-body">
-                                        <ul id="onlineUsersList" class="list-group"></ul>
-                                    </div>
-                                </div> 
-                            </div>
+                            
                             <div class="col-sm-10">
 
                                 <div id="chatPanel" class="panel panel-default">
@@ -60,6 +53,14 @@
                                     </div>
                                 </div>
                                 
+                            </div>
+                            <div id="userListCol" class="col-sm-2 hidden-xs">
+                                <div id="onlineUsersPanel" class="panel panel-default">
+                                    <div class="panel-heading">Online Users</div>
+                                    <div class="panel-body">
+                                        <ul id="onlineUsersList" class="list-group"></ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -75,8 +76,24 @@
                     <div class="container">
                         <div id="row" class="row">
                             <div class="col-md-7">
+                                <div id="playedListPanel" class="panel panel-default" hidden>
+                                    <div class="panel-heading">
+                                        <h3>Played Songs</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <ul id="playedList" class="list-group">
+                                            <!-- playedList goes here -->
+                                        </ul>
+                                    </div>
+                                </div>
                                 <div class="panel panel-default">
-                                    <div class="panel-heading"><h3>Group List <small>current playlist</small></h3></div>
+                                    <div class="panel-heading">
+                                        <h3>Group List <small class="hidden-xs">current playlist</small>
+                                            <button id="playGroupListBtn" disabled type="button" onclick="playGroupList();" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-play-circle"></span>
+                                            </button>
+                                        </h3>
+                                    </div>
                                     <div class="panel-body">
                                         <ul id="groupList" class="list-group">
                                             <!-- groupList goes here -->
@@ -123,8 +140,6 @@
                 <span class="glyphicon glyphicon-chevron-right"></span>
             </a>
         </div>
-    </div>
-
 
         <!-- modal content -->
         <div id="osx-modal-content">
