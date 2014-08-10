@@ -24,7 +24,7 @@ body {
     border-bottom: 1px solid #e5e5e5;
     position: fixed;
     width: 100%;
-    box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.72);
+    box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.37);
     margin-top: -43px;
     z-index: 1;
 }
@@ -156,6 +156,8 @@ body {
 
 #onlineUsersList {
     margin-bottom: 0px;
+    text-shadow: 1px 1px #000000;
+    color: white;
 }
 
 #chatPanel {
@@ -316,6 +318,20 @@ hr {
 /*---------------------------------------------
 -------------------- Sounds -------------------
 ---------------------------------------------*/
+#playGroupListBtn {
+    font-size: 54px;
+    padding: 0px 6px 0px 6px;
+    height: 68px;
+    color: rgb(63, 63, 63);
+    float: right;
+    border-radius: 100px;
+    margin: -26px -1px 0px 0px;
+}
+
+#playGroupListBtn:hover {
+    color: rgb(250, 131, 131);
+}
+
 #groupListPlaceHolder{
     text-align: center;
     color: #777;
@@ -374,7 +390,7 @@ hr {
     font-weight: bold;
     padding: 1px 4px 1px 4px;
     margin-right: 15px;
-    background-color: rgba(255, 128, 68, 0.53);
+    background-color: rgb(250, 131, 131);
 }
 
 #row{
@@ -447,17 +463,10 @@ hr {
     padding: 0px 5px 0px 5px;
     display: inline-block;
     border-top-left-radius: 3px;
-    color: rgb(236, 236, 236);
+    color: #ffffff;
     font-size: 28px;
     border-bottom-left-radius: 28px;
-    background: rgb(96,108,136); /* Old browsers */
-    background: -moz-linear-gradient(left,  rgba(96,108,136,1) 0%, rgba(63,76,107,1) 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(96,108,136,1)), color-stop(100%,rgba(63,76,107,1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(left,  rgba(96,108,136,1) 0%,rgba(63,76,107,1) 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(left,  rgba(96,108,136,1) 0%,rgba(63,76,107,1) 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(left,  rgba(96,108,136,1) 0%,rgba(63,76,107,1) 100%); /* IE10+ */
-    background: linear-gradient(to right,  rgba(96,108,136,1) 0%,rgba(63,76,107,1) 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#606c88', endColorstr='#3f4c6b',GradientType=1 ); /* IE6-9 */
+    background: rgba(0, 196, 101, 0.4); /* Old browsers */
 }
 .media.userTrack > a > .media-object{
     width: 70px;
@@ -465,14 +474,7 @@ hr {
 
 .media.userTrack > .indexContainer{
     height: 70px;
-    background: linear-gradient(to right, rgba(207, 72, 72, 1) 0%,rgba(128, 0, 0, 1) 100%);
-    background: rgb(96,108,136); /* Old browsers */
-    background: -moz-linear-gradient(left,  rgba(207, 72, 72, 1) 0%, rgba(128, 0, 0, 1)  100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(96,108,136,1)), color-stop(100%,rgba(63,76,107,1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(left,  rgba(207, 72, 72, 1) 0%,rgba(128, 0, 0, 1)  100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(left,  rgba(207, 72, 72, 1) 0%,rgba(128, 0, 0, 1)  100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(left,  rgba(207, 72, 72, 1) 0%,rgba(128, 0, 0, 1)  100%); /* IE10+ */
-    background: linear-gradient(to right,  rgba(207, 72, 72, 1) 0%,rgba(128, 0, 0, 1)  100%); /* W3C */
+    background: rgb(255, 103, 103); /* Old browsers */
 }
 
 /*---------------------------------------------

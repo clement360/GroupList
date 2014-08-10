@@ -17,10 +17,10 @@ var messages = [];
 var messageIndex = 0;
 var colorIndex = 0;
 var groupList = [];
-var colors = ['red','orange','yellow','green','blue'];
+var colors = ['#e5ed74', '#b5d4a1', '#C5AAE3','#7ba694','#308A72','#575751','#527ec4','#a4a4a4','#ffa897','#f77472','#fc8c6a','#fecb7f','#dbbd9b', '#decbc1', '#f2eac2'];
 
 io.sockets.on('connection', function (socket) {
-
+    
     //make this a running list later
     var usernames = [];
     for (u in users) 
@@ -117,6 +117,9 @@ io.sockets.on('connection', function (socket) {
         handleVote(data);
     });
 
+    socket.on('retrieveGroupList', function (data) {
+        socket.emit('latestGoupList', groupList);
+    });
     
 });
 
