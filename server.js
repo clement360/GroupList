@@ -1,8 +1,5 @@
 var express = require('express');
-var logfmt = require("logfmt");
 var app = express();
-
-app.use(logfmt.requestLogger());
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
@@ -11,8 +8,6 @@ app.use(express.static(__dirname + '/public'));
 app.get('/', function (req, res) {
     res.sendfile('index.html');
 });
-
-var port = Number(process.env.PORT || 3000);
 
 console.log("Started");
 
@@ -128,8 +123,8 @@ io.sockets.on('connection', function (socket) {
     
 });
 
-app.listen(port, function () {
-    console.log("Listening on " + port);
+http.listen(3000, function () {
+    console.log('listening on *:3000');
 });
 
 function userIndex(id) {
