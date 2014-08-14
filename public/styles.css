@@ -419,6 +419,15 @@ hr {
     position: absolute;
 }
 
+#trackInfo {
+    color:antiquewhite;
+}
+
+#trackInfo > h4 {
+    margin: 3px 0px -3px 0px;
+    white-space:nowrap;
+    overflow:hidden;
+}
 
 .playControl{
     padding-top: 8px;

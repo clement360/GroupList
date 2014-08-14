@@ -5,6 +5,7 @@ var debugging = false;
 var groupList = [];
 var groupListPlaying = false;
 var playedList = [];
+var marqueeID = 0;
 
 $(document).ready(function () {
     $('#soundFooter').hide();
@@ -283,14 +284,13 @@ function playTrack($target) {
                 }
                 else {
                 $('.positionBar').animate({ width: "100%" }, this.duration);
-                displayInfo();
                 }
             }
         },
         function (sound) {
         currentlyPlaying = sound;
         currentlyPlaying.play();
-        displayInfo();
+        displayInfo(id);
     });
     $target.attr('class', 'glyphicon glyphicon-stop');
     $currentlyPlayingSpan.parent().css("opacity", "1");
@@ -458,7 +458,6 @@ function playGroupList() {
     $('.positionBar').animate({ width: "0%" }, 100);
     if (groupList.length <= 0) {
         stopGroupList();
-        debugger;
         return true;
     }
     $('#playGroupListBtn').prop('disabled', true);
@@ -466,6 +465,7 @@ function playGroupList() {
     var nextSong = groupList[0];
     
     moveToPlayedList(removeFromGroupList(nextSong.id));
+    displayInfo(nextSong.id);
     SC.stream("/tracks/" + nextSong.id, 
         {
         limit: 30, 
@@ -480,7 +480,6 @@ function playGroupList() {
         function (sound) {
         currentlyPlaying = sound;
         currentlyPlaying.play();
-        displayInfo();
         $('#soundFooter').slideDown();
     });
     $('#footPlay').attr('class', 'glyphicon glyphicon-pause');
@@ -519,6 +518,29 @@ function stopGroupList() {
     $('#playGroupListBtn').prop('disabled', false);
 }
 
-function displayInfo() { 
-
+function displayInfo(id) {
+    SC.get('/tracks/' + id, function (track) {
+       
+        $('#trackInfo').html(
+            '<h4>' + track.title + '</h4>' +
+            '<h5>' + track.user.username + '</h5>'
+)
+        setTimeout(function () { scrollTitle(id); }, 2000);
+        
+    });
+}
+function scrollTitle(id) {
+    marqueeID = id;
+    var el = $('#trackInfo').children('h4');
+    var scrollDuration = 7000 * (el.get(0).scrollWidth / el.width());
+    if (el.get(0).scrollWidth > el.width()) {
+        var scrollTimer = setInterval(function (id) {
+            if(currentlyPlaying != null)
+                if (currentlyPlaying.sID.indexOf(marqueeID) == -1)
+                    clearInterval(scrollTimer);
+            $('#trackInfo').children('h4').animate({ scrollLeft: el.get(0).scrollWidth-el.width() + 5}, scrollDuration, function () {
+                $('#trackInfo').children('h4').animate({ scrollLeft: 0 }, 1000);
+            });
+        }, scrollDuration + 4000);   
+    }
 }
