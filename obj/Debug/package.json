@@ -1,31 +1,8 @@
 {
-  "name": "GroupList",
-  "version": "0.0.0",
-  "description": "A collaborative Playlist Builder by Miguel Clement",
-  "main": "server.js",
+  "name": "socket-chat-example",
+  "version": "0.0.1",
+  "description": "my first socket.io app",
   "dependencies": {
-    "socket.io-client": "~1.0.6",
-    "express": "~4.6.1",
-    "socket.io": "~1.0.6",
-    "logfmt": "^1.1.2"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/clement360/GroupList.git"
-  },
-  "keywords": [
-    "music",
-    "playlist"
-  ],
-  "author": "Miguel Clement",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/clement360/GroupList/issues"
-  },
-  "homepage": "https://github.com/clement360/GroupList"
+    "express": "^4.5.1"
+  }
 }

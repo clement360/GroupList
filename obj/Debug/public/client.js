@@ -5,7 +5,6 @@ var debugging = false;
 var groupList = [];
 var groupListPlaying = false;
 var playedList = [];
-var marqueeID = 0;
 
 $(document).ready(function () {
     $('#soundFooter').hide();
@@ -223,7 +222,14 @@ function playedListItem(track) {
     return item;
 }
 
-
+function moveToPlayedList(track) {
+    // first element to be added -> remove place holder
+    if (playedList.length == 1)
+        $('#playedList').html('');
+        
+    $('#playedList').append(playedListItem(track));
+    $('#PL-well' + track.id + '').slideDown();
+}
 
 function wellRemove($target) { 
     var id = parseInt($target.parents().eq(4).attr('id').replace('well', ''));
@@ -234,18 +240,15 @@ function footerPlay() {
     if (currentlyPlaying == null)
         alert('No song Selected');
     else if ($('#footPlay').attr('class') == "glyphicon glyphicon-pause") {
-        if ($currentlyPlayingSpan != null) {
-            $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-play playButton');
-            $currentlyPlayingSpan.parent().removeAttr('style');
-        }
+        $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-play playButton');
         $('#footPlay').attr('class', 'glyphicon glyphicon-play');
+        $currentlyPlayingSpan.parent().removeAttr('style');
         currentlyPlaying.pause();
         $('.positionBar').clearQueue();
         $('.positionBar').stop();
     }
     else {
-        if ($currentlyPlayingSpan != null)
-            $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-stop');
+        $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-stop');
         $('#footPlay').attr('class', 'glyphicon glyphicon-pause');
         currentlyPlaying.play();
         $('.positionBar').animate({ width: "100%" }, currentlyPlaying.duration-currentlyPlaying.position)
@@ -280,17 +283,15 @@ function playTrack($target) {
             onfinish: function () { stopTrack(); }, 
             onload: function () {
                 if (this.readyState == 2) {
-                    alert('this song failed to load 404');
+                alert('this song failed to load 404');
                 }
-                else {
-                $('.positionBar').animate({ width: "100%" }, this.duration);
-                }
+                $('.positionBar').animate({ width: "100%" }, this.duration)
             }
         },
         function (sound) {
         currentlyPlaying = sound;
         currentlyPlaying.play();
-        displayInfo(id);
+        
     });
     $target.attr('class', 'glyphicon glyphicon-stop');
     $currentlyPlayingSpan.parent().css("opacity", "1");
@@ -401,6 +402,19 @@ function replaceAddButton(id) {
     });
 }
 
+function removeFromGroupList(id) {
+    if (idAlreadyExists(id)) {
+        var trackIndex = findTrackById(id);
+    
+        $('#well' + id + '').fadeOut(300, function () {$(this).remove();});
+        var button = $('#' + id + '').find('.glyphicon-remove-sign');
+        button.removeAttr('class').addClass('glyphicon glyphicon-plus-sign addButton');
+        button.unbind().click(function () { handleAdd($(this)); });
+
+        updateTrailingindices(trackIndex + 1, groupList[trackIndex].index);
+        return groupList.splice(trackIndex, 1)[0 ];
+    }
+}
 
 function updateTrailingindices(indexAfterDelete, index) {
     if (indexAfterDelete < groupList.length) {
@@ -434,8 +448,7 @@ function compareTracks(a, b) {
 function renderGroupList() {
     if (groupList.length > 0) {
         $('#groupList').html('');
-        if (!groupListPlaying)
-            $('#playGroupListBtn').prop('disabled', false);
+        $('#playGroupListBtn').prop('disabled', false);
         for (i in groupList) {
             $('#groupList').append(groupListItem(groupList[i]));
         }
@@ -458,6 +471,7 @@ function playGroupList() {
     $('.positionBar').animate({ width: "0%" }, 100);
     if (groupList.length <= 0) {
         stopGroupList();
+        debugger;
         return true;
     }
     $('#playGroupListBtn').prop('disabled', true);
@@ -465,7 +479,6 @@ function playGroupList() {
     var nextSong = groupList[0];
     
     moveToPlayedList(removeFromGroupList(nextSong.id));
-    displayInfo(nextSong.id);
     SC.stream("/tracks/" + nextSong.id, 
         {
         limit: 30, 
@@ -485,30 +498,6 @@ function playGroupList() {
     $('#footPlay').attr('class', 'glyphicon glyphicon-pause');
 }
 
-function removeFromGroupList(id) {
-    if (idAlreadyExists(id)) {
-        var trackIndex = findTrackById(id);
-        
-        $('#well' + id + '').fadeOut(300, function () { $(this).remove(); });
-        var button = $('#' + id + '').find('.glyphicon-remove-sign');
-        button.removeAttr('class').addClass('glyphicon glyphicon-plus-sign addButton');
-        button.unbind().click(function () { handleAdd($(this)); });
-        
-        updateTrailingindices(trackIndex + 1, groupList[trackIndex].index);
-        return groupList.splice(trackIndex, 1)[0];
-    }
-}
-
-function moveToPlayedList(track) {
-    // first element to be added -> remove place holder
-    if (playedList.length == 1)
-        $('#playedList').html('');
-    
-    $('#playedList').append(playedListItem(track));
-    setTimeout(function () { $('#PL-well' + track.id + '').slideDown(); }, 320)
-}
-
-
 function stopGroupList() {
     groupListPlaying = false;
     socket.emit('retrieveGroupList');
@@ -516,31 +505,4 @@ function stopGroupList() {
     $('#playedListPanel').slideUp();
     $('#soundFooter').slideUp();
     $('#playGroupListBtn').prop('disabled', false);
-}
-
-function displayInfo(id) {
-    SC.get('/tracks/' + id, function (track) {
-       
-        $('#trackInfo').html(
-            '<h4>' + track.title + '</h4>' +
-            '<h5>' + track.user.username + '</h5>'
-)
-        setTimeout(function () { scrollTitle(id); }, 2000);
-        
-    });
-}
-function scrollTitle(id) {
-    marqueeID = id;
-    var el = $('#trackInfo').children('h4');
-    var scrollDuration = 7000 * (el.get(0).scrollWidth / el.width());
-    if (el.get(0).scrollWidth > el.width()) {
-        var scrollTimer = setInterval(function (id) {
-            if(currentlyPlaying != null)
-                if (currentlyPlaying.sID.indexOf(marqueeID) == -1)
-                    clearInterval(scrollTimer);
-            $('#trackInfo').children('h4').animate({ scrollLeft: el.get(0).scrollWidth-el.width() + 5}, scrollDuration, function () {
-                $('#trackInfo').children('h4').animate({ scrollLeft: 0 }, 1000);
-            });
-        }, scrollDuration + 4000);   
-    }
 }

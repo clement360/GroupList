@@ -1289,6 +1289,7 @@ C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\has-cors\History.md
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\has-cors\index.js
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\has-cors\Makefile
+C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\has-cors\node_modules\global\.gitignore
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\has-cors\node_modules\global\component.json
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\has-cors\node_modules\global\History.md
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\has-cors\node_modules\global\index.js
@@ -1344,6 +1345,12 @@ C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\binding.gyp
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\bin\wscat
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\builderror.log
+C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\build\binding.sln
+C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\build\bufferutil.vcxproj
+C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\build\bufferutil.vcxproj.filters
+C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\build\config.gypi
+C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\build\validation.vcxproj
+C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\build\validation.vcxproj.filters
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\doc\ws.md
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\examples\fileapi\.npmignore
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\examples\fileapi\package.json
@@ -1394,6 +1401,7 @@ C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\node_modules\options\README.md
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\node_modules\options\test\fixtures\test.conf
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\node_modules\options\test\options.test.js
+C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\node_modules\tinycolor\.gitignore
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\node_modules\tinycolor\example.js
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\node_modules\tinycolor\package.json
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\node_modules\tinycolor\README.md
@@ -1492,6 +1500,7 @@ C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\socket.io-parser\History.md
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\socket.io-parser\index.js
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\socket.io-parser\Makefile
+C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\socket.io-parser\node_modules\emitter\.gitignore
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\socket.io-parser\node_modules\emitter\component.json
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\socket.io-parser\node_modules\emitter\History.md
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\socket.io-parser\node_modules\emitter\index.js
@@ -1833,6 +1842,3 @@ C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io\node_modules
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io\package.json
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io\Readme.md
 C:\Users\Miguel\WebStorm\GroupList\obj\Debug\bin\Microsoft.NodejsTools.WebRole.dll
-C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\has-cors\node_modules\global\.npmignore
-C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\engine.io-client\node_modules\ws\node_modules\tinycolor\.npmignore
-C:\Users\Miguel\WebStorm\GroupList\obj\Debug\node_modules\socket.io-client\node_modules\socket.io-parser\node_modules\emitter\.npmignore
