@@ -404,17 +404,21 @@ hr {
     font-size: 27px;
     background: linear-gradient(to bottom, rgba(207, 207, 207, 0.58) 0%,rgba(134, 134, 134, 0.54) 100%);
     z-index: 1;
+    position: absolute;
     width: inherit;
+    min-width: 100%;
 }
 
 .positionBar{
+    box-sizing: border-box;
     border-radius: 5px;
-    height: 50px;
-    background-color: #CC5A5A;
+    width: 0px;
+    background-color: rgba(255, 23, 3, 0.55);
     z-index: 0;
-    width: 0%;
-    margin-top: -50px;
+    height: 50px;
+    position: absolute;
 }
+
 
 .playControl{
     padding-top: 8px;

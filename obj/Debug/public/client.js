@@ -191,6 +191,46 @@ function groupListItem(track) {
     return item;
 }
 
+function playedListItem(track) { 
+    var score = (track.score == null)? 0 : track.score;
+    var userTrack = (track.username == nick);
+    var art = (track.artwork_url == null)? "noCover.png" : track.artwork_url;
+    var index = (track.index == null)? 0 : track.index;
+    var item = '<div hidden class="well well-sm" id="PL-well' + track.id + '">';
+
+        item += '<div class="media userTrack">';
+
+        item += '<div class="media">';
+
+    item += '<div class="indexContainer pull-left"><div id="PL-index' + track.id + '">' + index + '</div></div>' +
+                        '<a class="pull-left">' +
+                            '<img class="media-object" src="' + art + '" alt="">' +
+                        '</a>' +
+                        '<div class="media-body">' +
+                            '<div class="row">' +
+                                '<div class="col-xs-10">' +
+                                    '<h5 class="media-heading">' + track.title + '</h5>' +
+                                    '<div class="groupListDescription">' +
+                                        'Duration: ' + runTime(track.duration) + ' Added By: ' + track.username + 'Score: ' + track.score +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>';
+    
+    item += '</div>' +
+                    '</div>' +
+                '</div>';
+    return item;
+}
+
+function moveToPlayedList(track) {
+    // first element to be added -> remove place holder
+    if (playedList.length == 1)
+        $('#playedList').html('');
+        
+    $('#playedList').append(playedListItem(track));
+    $('#PL-well' + track.id + '').slideDown();
+}
+
 function wellRemove($target) { 
     var id = parseInt($target.parents().eq(4).attr('id').replace('well', ''));
     socket.emit('removeTrack', { id: id });
@@ -372,7 +412,7 @@ function removeFromGroupList(id) {
         button.unbind().click(function () { handleAdd($(this)); });
 
         updateTrailingindices(trackIndex + 1, groupList[trackIndex].index);
-        groupList.splice(trackIndex, 1);
+        return groupList.splice(trackIndex, 1)[0 ];
     }
 }
 
@@ -409,14 +449,18 @@ function renderGroupList() {
     if (groupList.length > 0) {
         $('#groupList').html('');
         $('#playGroupListBtn').prop('disabled', false);
+        for (i in groupList) {
+            $('#groupList').append(groupListItem(groupList[i]));
+        }
+        $('.upVote').unbind("click").click(function () { upVote($(this)); });
+        $('.downVote').unbind("click").click(function () { downVote($(this)); });
+        $('.wellRemove').unbind("click").click(function () { wellRemove($(this)); });
+        updateVoteHiglights();
     }
-    for (i in groupList) {
-        $('#groupList').append(groupListItem(groupList[i]));
+    else {
+        $('#groupList').html('<li id="groupListPlaceHolder"><h5>Selected songs go here.</h5></li>');
+        $('#playGroupListBtn').prop('disabled', true);
     }
-    $('.upVote').unbind("click").click(function () { upVote($(this)); });
-    $('.downVote').unbind("click").click(function () { downVote($(this)); });
-    $('.wellRemove').unbind("click").click(function () { wellRemove($(this)); });
-    updateVoteHiglights();
 }
 
 function playGroupList() {
@@ -426,15 +470,15 @@ function playGroupList() {
             currentlyPlaying.stop();
     $('.positionBar').animate({ width: "0%" }, 100);
     if (groupList.length <= 0) {
-        groupListPlaying = false;
-        stopTrack();
-
+        stopGroupList();
+        debugger;
         return true;
     }
+    $('#playGroupListBtn').prop('disabled', true);
     $('#playedListPanel').slideDown();
-    var nextSong = groupList.pop();
-    playedList.push(nextSong);
-
+    var nextSong = groupList[0];
+    
+    moveToPlayedList(removeFromGroupList(nextSong.id));
     SC.stream("/tracks/" + nextSong.id, 
         {
         limit: 30, 
@@ -452,4 +496,13 @@ function playGroupList() {
         $('#soundFooter').slideDown();
     });
     $('#footPlay').attr('class', 'glyphicon glyphicon-pause');
+}
+
+function stopGroupList() {
+    groupListPlaying = false;
+    socket.emit('retrieveGroupList');
+    playedList.length = 0;
+    $('#playedListPanel').slideUp();
+    $('#soundFooter').slideUp();
+    $('#playGroupListBtn').prop('disabled', false);
 }
