@@ -433,6 +433,15 @@ hr {
     position: absolute;
 }
 
+.progress-bar {
+    background-repeat: repeat;
+    background-color: rgba(11, 100, 47, 1);
+}
+
+#loadingSongDiv {
+    height: 50px;
+}
+
 #trackInfo {
     color:antiquewhite;
 }

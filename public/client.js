@@ -286,7 +286,8 @@ function playTrack($target) {
                     alert('this song failed to load, This is a problem on SoundCloud\'s end. they\'re apparently working on it.');
                 }
                 else {
-                $('.positionBar').animate({ width: "100%" }, this.duration);
+                    $('#loadingSongDiv').hide();
+                    $('.positionBar').animate({ width: "100%" }, this.duration);
                 }
             }
         },
@@ -491,6 +492,7 @@ function playGroupList() {
             if (this.readyState == 2) {
                 alert('this song failed to load 404');
             }
+            $('#loadingSongDiv').hide();
             $('.positionBar').animate({ width: "100%" }, this.duration)
         }
     },
@@ -538,12 +540,13 @@ function stopGroupList() {
 }
 
 function displayInfo(id) {
+    $('#loadingSongDiv').show();
     SC.get('/tracks/' + id, function (track) {
        
         $('#trackInfo').html(
             '<h4>' + track.title + '</h4>' +
             '<h5>' + track.user.username + '</h5>'
-)
+        )
         setTimeout(function () { scrollTitle(id); }, 2000);
         
     });
