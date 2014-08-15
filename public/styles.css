@@ -393,6 +393,20 @@ hr {
     background-color: rgb(250, 131, 131);
 }
 
+.groupListScore {
+    font-size: 28px;
+    float: right;
+    border-radius: 100px;
+    width: auto;
+    text-align: center;
+    padding: 2px 4px 2px 4px;
+    background-color: rgb(250, 131, 131);
+}
+
+#GLscoreDiv{
+    padding: 5px 15px 0px 0px;
+}
+
 #row{
     margin: 25px 12px 0px 12px;
 }
