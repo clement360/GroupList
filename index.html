@@ -90,7 +90,7 @@
                                     <div class="panel-heading">
                                         <h3>Group List <small class="hidden-xs">current playlist</small>
                                             <button id="playGroupListBtn" disabled type="button" onclick="playGroupList();" class="btn btn-default btn-sm">
-                                                <span class="glyphicon glyphicon-play-circle"></span>
+                                                <span id="groupListIcon" class="glyphicon glyphicon-play-circle"></span>
                                             </button>
                                         </h3>
                                     </div>
@@ -118,9 +118,9 @@
                         <footer id="soundFooter">
                             <div class="container">
                                 <div class="playBar row">
-                                    <div class="col-xs-1 playControl"><span id="footPrev" class="glyphicon glyphicon-step-backward"></span></div>
+                                    <div id="footPrev" class="col-xs-1 playControl" hidden><span class="glyphicon glyphicon-step-backward"></span></div>
                                     <div class="col-xs-1 playControl"><span id="footPlay" class="glyphicon glyphicon-play"></span></div>
-                                    <div class="col-xs-1 playControl"><span id="footNext" class="glyphicon glyphicon-step-forward"></span></div>
+                                    <div id="footNext" class="col-xs-1 playControl" hidden><span class="glyphicon glyphicon-step-forward"></span></div>
                                     <div id="trackInfo" class="col-xs-9"></div>
                                 </div>
                                 <div class="positionBar row"></div>
@@ -170,8 +170,6 @@
                 <div class="rect5"></div>
             </div>
         </div>
-
-        
 
 </body>
 </html>

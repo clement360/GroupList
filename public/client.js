@@ -70,8 +70,8 @@ socket.on('newTrack', function (data) {
     }
     if (!idAlreadyExists(data.id)) {
         groupList.push(data);
-        renderGroupList();
     }
+    organizeGroupList();
 });
 
 socket.on('vote', function (data) {
@@ -143,7 +143,7 @@ function handleAdd($target) {
 
                 replaceAddButton(id);
                 groupList.push(newTrack);
-                renderGroupList();                
+                renderGroupList();              
                 socket.emit('newTrack', newTrack);
             }
         });
@@ -302,9 +302,11 @@ function playTrack($target) {
 }
 
 function stopTrack() {
-    $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-play');
+    if ($currentlyPlayingSpan != null) {
+        $currentlyPlayingSpan.attr('class', 'glyphicon glyphicon-play');
+        $currentlyPlayingSpan.parent().removeAttr('style');
+    }
     $('#footPlay').attr('class', 'glyphicon glyphicon-play');
-    $currentlyPlayingSpan.parent().removeAttr('style');
     currentlyPlaying.stop();
     $('.positionBar').clearQueue();
     $('.positionBar').stop();
@@ -425,10 +427,6 @@ function updateTrailingindices(indexAfterDelete, index) {
 }
 
 function organizeGroupList() {
-    var oldListOrder = [];
-    for (var i = 0; i < groupList.length; i++) {
-        oldListOrder.push({id: groupList[i].id, index: groupList[i].index});
-    }
     groupList.sort(compareTracks);
     for (var i = 0; i < groupList.length; i++) {
         groupList[i].index = i + 1;
@@ -470,16 +468,34 @@ function playGroupList() {
     $('.positionBar').stop();
     $('.positionBar').animate({ width: "0%" }, 100);
     if (currentlyPlaying != null)
-        if (currentlyPlaying.playState > 0 || currentlyPlaying.paused) {
+        if (currentlyPlaying.playState > 0 || currentlyPlaying.paused)
+            stopTrack();
+    
+    
+    $('#groupListIcon').prop('class', 'icon-stop');
+    $('#playGroupListBtn').attr('onclick', 'stopGroupList();');
+    $('#playedListPanel').slideDown();
+
+    $('#footNext').show();
+    $('#footPrev').show();
+    
+    $('#footNext').unbind().click(function () { playNext(); });
+    playNext();
+}
+
+function playNext() { 
+    // reset play bar
+    $('.positionBar').clearQueue();
+    $('.positionBar').stop();
+    $('.positionBar').animate({ width: "0%" }, 100);
+    if (currentlyPlaying != null)
+        if (currentlyPlaying.playState > 0 || currentlyPlaying.paused)
             currentlyPlaying.stop();
-        }
     
     if (groupList.length <= 0) {
         stopGroupList();
         return true;
     }
-    $('#playGroupListBtn').prop('disabled', true);
-    $('#playedListPanel').slideDown();
     var nextSong = groupList[0];
     
     moveToPlayedList(removeFromGroupList(nextSong.id));
@@ -487,7 +503,7 @@ function playGroupList() {
     SC.stream("/tracks/" + nextSong.id, 
         {
         limit: 30, 
-        onfinish: function () { playGroupList(); }, 
+        onfinish: function () { playNext(); }, 
         onload: function () {
             if (this.readyState == 2) {
                 alert('this song failed to load 404');
@@ -531,12 +547,24 @@ function moveToPlayedList(track) {
 
 
 function stopGroupList() {
+    // reset play bar
+    $('.positionBar').clearQueue();
+    $('.positionBar').stop();
+    $('.positionBar').animate({ width: "0%" }, 100);
+    if (currentlyPlaying != null)
+        if (currentlyPlaying.playState > 0 || currentlyPlaying.paused)
+            currentlyPlaying.stop();
+
     groupListPlaying = false;
     socket.emit('retrieveGroupList');
     playedList.length = 0;
     $('#playedListPanel').slideUp();
-    $('#soundFooter').slideUp();
-    $('#playGroupListBtn').prop('disabled', false);
+    $('#soundFooter').slideUp(function () {
+        $('#footNext').hide();
+        $('#footPrev').hide();
+    });
+    $('#groupListIcon').prop('class', 'glyphicon glyphicon-play-circle');
+    $('#playGroupListBtn').attr('onclick', 'playGroupList();');
 }
 
 function displayInfo(id) {

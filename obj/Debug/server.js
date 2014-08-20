@@ -57,6 +57,7 @@ io.sockets.on('connection', function (socket) {
             data.votes = [];
             groupList.push(data);
             io.sockets.emit('newTrack', data);
+            organizeGroupList();
         }
     });
     
