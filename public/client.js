@@ -152,12 +152,17 @@ function handleAdd($target) {
         
 }
 
-function groupListItem(track) {
+function groupListItem(track, hidden) {
+    // "hidden" is an optional arguement
+    hidden = (typeof hidden === "undefined") ? false : hidden;
+    var hideStr = (hidden == true) ? 'hidden' : '';
     var score = (track.score == null)? 0 : track.score; 
     var userTrack = (track.username == nick);
     var art = (track.artwork_url == null)? "noCover.png" : track.artwork_url;
     var index = (track.index == null)? 0 : track.index;
-    var item = '<div class="well well-sm" id="well' + track.id + '">';
+
+    // add hidden to div
+    var item = '<div class="well well-sm" id="well' + track.id + '" '+hideStr+'>';
         if (userTrack) {
             item += '<div class="media userTrack">';
         } else {
@@ -294,6 +299,7 @@ function playTrack($target) {
         function (sound) {
         currentlyPlaying = sound;
         currentlyPlaying.play();
+        currentlyPlaying.id = parseInt(id);
         displayInfo(id);
     });
     $target.attr('class', 'glyphicon glyphicon-stop');
@@ -356,6 +362,15 @@ function findTrackById(id) {
         if (groupList[i].id == id)
             return i;
     console.log('track not found (client.js : findTrackById)');
+    return -1;
+}
+
+// Same as function findTrackById(id); but it searches theough the PlayedList
+function findTrackByIdPL(id) {
+    for (var i = 0; i < playedList.length; i++)
+        if (playedList[i].id == id)
+            return i;
+    console.log('track not found (client.js : findTrackByIdPL)');
     return -1;
 }
 
@@ -477,9 +492,10 @@ function playGroupList() {
     $('#playedListPanel').slideDown();
 
     $('#footNext').show();
-    $('#footPrev').show();
     
+    $('#soundFooter').slideDown();
     $('#footNext').unbind().click(function () { playNext(); });
+    $('#footPrev').unbind().click(function () { playPrev(); });
     playNext();
 }
 
@@ -506,7 +522,7 @@ function playNext() {
         onfinish: function () { playNext(); }, 
         onload: function () {
             if (this.readyState == 2) {
-                alert('this song failed to load 404');
+                alert('this song failed to load, This is a problem on SoundCloud\'s end. they\'re apparently working on it.');
             }
             $('#loadingSongDiv').hide();
             $('.positionBar').animate({ width: "100%" }, this.duration)
@@ -515,9 +531,53 @@ function playNext() {
         function (sound) {
         currentlyPlaying = sound;
         currentlyPlaying.play();
+        currentlyPlaying.id = parseInt(nextSong.id);
+    });
+    $('#footPlay').attr('class', 'glyphicon glyphicon-pause');
+    if(playedList.length == 2)
+        $('#footPrev').show();
+}
+
+function playPrev() {
+    // reset play bar
+    $('.positionBar').clearQueue();
+    $('.positionBar').stop();
+    $('.positionBar').animate({ width: "0%" }, 100);
+    if (currentlyPlaying != null)
+        if (currentlyPlaying.playState > 0 || currentlyPlaying.paused)
+            currentlyPlaying.stop();
+    
+    if (playedList.length <= 1) {
+        $('#footPrev').hide();
+        return true;
+    }
+
+    var prevSong = playedList[playedList.length-2];
+    
+    moveToGroupList(removeFromPlayedList(currentlyPlaying.id));
+    // play prevSong
+    displayInfo(prevSong.id);
+    SC.stream("/tracks/" + prevSong.id, 
+        {
+        limit: 30, 
+        onfinish: function () { playNext(); }, 
+        onload: function () {
+            if (this.readyState == 2) {
+                alert('this song failed to load, This is a problem on SoundCloud\'s end. they\'re apparently working on it.');
+            }
+            $('#loadingSongDiv').hide();
+            $('.positionBar').animate({ width: "100%" }, this.duration)
+        }
+    },
+        function (sound) {
+        currentlyPlaying = sound;
+        currentlyPlaying.play();
+        currentlyPlaying.id = parseInt(prevSong.id);
         $('#soundFooter').slideDown();
     });
     $('#footPlay').attr('class', 'glyphicon glyphicon-pause');
+    if (playedList.length <= 1) 
+        $('#footPrev').hide();
 }
 
 function removeFromGroupList(id) {
@@ -542,9 +602,30 @@ function moveToPlayedList(track) {
     track.index = playedList.length + 1;
     playedList.push(track)
     $('#playedList').append(playedListItem(track));
-    setTimeout(function () { $('#PL-well' + track.id + '').slideDown(); }, 320)
+    setTimeout(function () { $('#PL-well' + track.id + '').slideDown(); }, 320);
 }
 
+function removeFromPlayedList(id) {
+    var trackIndex = findTrackByIdPL(id);
+    var currentSong = playedList[trackIndex];
+    
+    $('#PL-well' + id + '').fadeOut(300, function () { $(this).remove(); });
+
+    return playedList.splice(trackIndex, 1)[0];
+}
+
+function moveToGroupList(track) {
+    track.index = 1; 
+    groupList.unshift(track);
+    $('#groupList').prepend(groupListItem(track, true));
+    setTimeout(function () { $('#well' + track.id + '').slideDown(); }, 320);
+
+    // update groupList Indicies
+    for (var t = 0; t <= groupList.length; t++) {
+        groupList[t].index = t + 1;
+        $('#index' + groupList[t].id + '').text(t + 1);
+    }
+}
 
 function stopGroupList() {
     // reset play bar
@@ -575,7 +656,7 @@ function displayInfo(id) {
             '<h4>' + track.title + '</h4>' +
             '<h5>' + track.user.username + '</h5>'
         )
-        setTimeout(function () { scrollTitle(id); }, 2000);
+        setTimeout(function () { scrollTitle(id); }, 300);
         
     });
 }
