@@ -291,14 +291,19 @@ function playTrack($target) {
                     alert('this song failed to load, This is a problem on SoundCloud\'s end. they\'re apparently working on it.');
                 }
                 else {
-                    $('#loadingSongDiv').hide();
-                    $('.positionBar').animate({ width: "100%" }, this.duration);
+                    $('#loadingSongDiv').fadeOut();
                 }
-            }
+        },
+        whileloading: function () {
+            $('#loadingSongBar').width((this.bytesLoaded/this.bytesTotal)*100+'%');
+        }
         },
         function (sound) {
         currentlyPlaying = sound;
         currentlyPlaying.play();
+        currentlyPlaying.onPosition(1, function () {
+            $('.positionBar').animate({ width: "100%" }, this.durationEstimate);
+        });
         currentlyPlaying.id = parseInt(id);
         displayInfo(id);
     });
@@ -524,13 +529,16 @@ function playNext() {
             if (this.readyState == 2) {
                 alert('this song failed to load, This is a problem on SoundCloud\'s end. they\'re apparently working on it.');
             }
-            $('#loadingSongDiv').hide();
-            $('.positionBar').animate({ width: "100%" }, this.duration)
+            $('#loadingSongDiv').fadeOut();
+        },
+        whileloading: function () {
+            $('#loadingSongBar').width((this.bytesLoaded / this.bytesTotal) * 100 + '%');
         }
     },
         function (sound) {
         currentlyPlaying = sound;
         currentlyPlaying.play();
+        currentlyPlaying.onPosition(1, function () { $('.positionBar').animate({ width: "100%" }, this.durationEstimate); });
         currentlyPlaying.id = parseInt(nextSong.id);
     });
     $('#footPlay').attr('class', 'glyphicon glyphicon-pause');
@@ -565,13 +573,18 @@ function playPrev() {
             if (this.readyState == 2) {
                 alert('this song failed to load, This is a problem on SoundCloud\'s end. they\'re apparently working on it.');
             }
-            $('#loadingSongDiv').hide();
-            $('.positionBar').animate({ width: "100%" }, this.duration)
+            $('#loadingSongDiv').fadeOut();
+        },
+        whileloading: function () {
+            $('#loadingSongBar').width((this.bytesLoaded / this.bytesTotal) * 100 + '%');
         }
     },
         function (sound) {
         currentlyPlaying = sound;
         currentlyPlaying.play();
+        currentlyPlaying.onPosition(1, function () {
+            $('.positionBar').animate({ width: "100%" }, this.durationEstimate);
+        });
         currentlyPlaying.id = parseInt(prevSong.id);
         $('#soundFooter').slideDown();
     });
@@ -621,7 +634,7 @@ function moveToGroupList(track) {
     setTimeout(function () { $('#well' + track.id + '').slideDown(); }, 320);
 
     // update groupList Indicies
-    for (var t = 0; t <= groupList.length; t++) {
+    for (var t = 0; t < groupList.length; t++) {
         groupList[t].index = t + 1;
         $('#index' + groupList[t].id + '').text(t + 1);
     }
