@@ -34,13 +34,16 @@ $(document).ready(function () {
     $Controls.mouseleave(function () {
         $(this).css("opacity", ".05");
     });
-    openModal();
+    
+    checkCookie();
+    
     $('.carousel').carousel({
         interval: false
     });
     $('#username').focus();
     
     $('#footPlay').click(function () { footerPlay(); });
+  
 });
 
 // ----------------------------------------------------------------------------------
@@ -291,7 +294,7 @@ function playTrack($target) {
                     alert('this song failed to load, This is a problem on SoundCloud\'s end. they\'re apparently working on it.');
                 }
                 else {
-                    $('#loadingSongDiv').fadeOut();
+                    $('#loadingSongDiv').fadeOut(function () { $('#loadingSongBar').width('0%'); });
                 }
         },
         whileloading: function () {
@@ -324,6 +327,7 @@ function stopTrack() {
     $('.positionBar').css('width', '0%');
     currentlyPlaying = null;
     $('#soundFooter').slideUp();
+    $('#loadingSongBar').width('0%');
 }
 
 function runTime(ms) {
@@ -504,8 +508,9 @@ function playGroupList() {
     playNext();
 }
 
-function playNext() { 
+function playNext() {
     // reset play bar
+    
     $('.positionBar').clearQueue();
     $('.positionBar').stop();
     $('.positionBar').animate({ width: "0%" }, 100);
@@ -529,7 +534,7 @@ function playNext() {
             if (this.readyState == 2) {
                 alert('this song failed to load, This is a problem on SoundCloud\'s end. they\'re apparently working on it.');
             }
-            $('#loadingSongDiv').fadeOut();
+            $('#loadingSongDiv').fadeOut(function () { $('#loadingSongBar').width('0%'); });
         },
         whileloading: function () {
             $('#loadingSongBar').width((this.bytesLoaded / this.bytesTotal) * 100 + '%');
@@ -573,7 +578,7 @@ function playPrev() {
             if (this.readyState == 2) {
                 alert('this song failed to load, This is a problem on SoundCloud\'s end. they\'re apparently working on it.');
             }
-            $('#loadingSongDiv').fadeOut();
+            $('#loadingSongDiv').fadeOut(function () {$('#loadingSongBar').width('0%'); });
         },
         whileloading: function () {
             $('#loadingSongBar').width((this.bytesLoaded / this.bytesTotal) * 100 + '%');
@@ -656,6 +661,7 @@ function stopGroupList() {
     $('#soundFooter').slideUp(function () {
         $('#footNext').hide();
         $('#footPrev').hide();
+        $('#loadingSongBar').width('0%');
     });
     $('#groupListIcon').prop('class', 'glyphicon glyphicon-play-circle');
     $('#playGroupListBtn').attr('onclick', 'playGroupList();');

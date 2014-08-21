@@ -111,7 +111,9 @@ body {
 
 #searchDiv{
     float: right;
+    margin-top: 15px;
     margin-right: 5px;
+    font-size: 15px;
 }
 
 #username{
@@ -433,24 +435,26 @@ hr {
     position: absolute;
 }
 
-.progress{
-    
-}
 
 .progress-bar {
     background-repeat: repeat;
     background-color: rgba(11, 100, 47, 1);
+    -webkit-transition: width 0.1s ease !important;
+     -moz-transition: width 0.1s ease !important;
+       -o-transition: width 0.1s ease !important;
+          transition: width 0.1s ease !important;
 }
 
 #loadingSongDiv {
     height: 50px;
     overflow: hidden;
-    background-color: #f7f7f7;
-    background-image: -moz-linear-gradient(top, #f5f5f5, #f9f9f9);
-    background-image: -ms-linear-gradient(top, #f5f5f5, #f9f9f9);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f5f5f5), to(#f9f9f9));
-    background-image: -webkit-linear-gradient(top, #f5f5f5, #f9f9f9);
-    background-image: -o-linear-gradient(top, #f5f5f5, #f9f9f9);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: -moz-linear-gradient(top, rgba(73, 73, 73, 0), rgba(12, 12, 12, 0));
+    background-image: -ms-linear-gradient(top, rgba(73, 73, 73, 0), rgba(12, 12, 12, 0));
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(rgba(73, 73, 73, 0)), to(rgba(12, 12, 12, 0)));
+    background-image: -webkit-linear-gradient(top, rgba(73, 73, 73, 0), rgba(12, 12, 12, 0));
+    background-image: -o-linear-gradient(top, rgba(73, 73, 73, 0), rgba(12, 12, 12, 0));
+
 }
 
 #trackInfo {

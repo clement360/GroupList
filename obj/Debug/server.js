@@ -8,8 +8,8 @@ app.use(express.static(__dirname + '/public'));
 app.get('/', function (req, res) {
     res.sendfile('index.html');
 });
-
-var port = Number(process.env.PORT || 3000);
+//var port = Number(process.env.PORT || 3000);
+var port = 3000;
 console.log("Started");
 
 var users = [];
@@ -71,31 +71,28 @@ io.sockets.on('connection', function (socket) {
     
     socket.on('newUser', function (data) {
         var error = null;
-        if (usernameExistsAndConnected(data.username)) {
-            error = 'The user name "' + data.username + '" has already been taken.';
-            socket.emit('newUser', {error: error, username: null});
+        
+        // error is null for all these cases
+        // error has been temporarily removed (add when accounts are ready)
+        var temp = getUserIfExists(data.username);
+        if (temp == null) {
+            userID++;
+            socket.userID = userID;
+            socket.username = data.username;
+            socket.color = assignColor();
+            users.push(socket);
+            socket.emit('newUser', { error: null, username: null, setCookie: true });
         }
         else {
-            // error is null for all these cases
-            var temp = getUserIfExists(data.username);
-            if (temp == null) {
-                userID++;
-                socket.userID = userID;
-                socket.username = data.username;
-                socket.color = assignColor();
-                users.push(socket);
-                socket.emit('newUser', { error: null, username: null });
-            }
-            else {
-                // in this case the user is returning so we bind their user info to the new socket
-                socket.userID = temp.socket.userID;
-                socket.color = temp.socket.color;
-                // we only keep the original username's case
-                socket.username = temp.socket.username;
-                users[temp.index] = socket;
-                socket.emit('newUser', {error: null, username: socket.username});
-            }
+            // in this case the user is returning so we bind their user info to the new socket
+            socket.userID = temp.socket.userID;
+            socket.color = temp.socket.color;
+            // we only keep the original username's case
+            socket.username = temp.socket.username;
+            users[temp.index] = socket;
+            socket.emit('newUser', {error: null, username: socket.username, setCookie: false});
         }
+        
     });
     
     socket.on('userConnected', function () {
@@ -280,12 +277,13 @@ function compareTracks(a, b) {
     return 0;
 }
 
-function usernameExistsAndConnected(username) {
-    for (u in users)
-        if (users[u].username.toLowerCase() == username.toLowerCase() && users[u].connected)
-            return true;
-    return false;
-}
+// temporarily removed
+//function usernameExistsAndConnected(username) {
+//    for (u in users)
+//        if (users[u].username.toLowerCase() == username.toLowerCase() && users[u].connected)
+//            return true;
+//    return false;
+//}
 
 function assignColor() {
     if (colorIndex >= colors.length)

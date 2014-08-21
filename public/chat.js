@@ -3,6 +3,7 @@ var users = [];
 var connected = 0;
 var oldestMessageIndex = 0;
 var colorIndex = 0;
+var modalOpen = false;
 
 socket.on('userConnection', function (data) {
     users.push(data);
@@ -59,7 +60,7 @@ function sendUser() {
     }
     else {
         var msg = nick + " has joined the chat";
-        socket.emit('newUser', { type: 'notice', message: msg, username: nick });
+        socket.emit('newUser', { username: nick });
     }
     return false;
 }
@@ -71,6 +72,9 @@ function handleNewUser(data) {
         $.modal.close();
         $('#username').val('');
         $('.username').text(nick);
+        if (data.setCookie == true) {
+            setCookie("GLUser", nick, 3);
+        }
         renderGroupList();
         socket.emit('userConnected');
     }
@@ -78,6 +82,34 @@ function handleNewUser(data) {
         $('#errorDiv').show();
         $("#errorDiv").text(data.error);
         $("#errorDiv").effect("shake", { times: 1 }, 'fast');
+    }
+}
+
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toGMTString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1);
+        if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
+    }
+    return "";
+}
+
+function checkCookie() {
+    var username = getCookie("GLUser");
+    if (username != "") {
+        nick = username;
+        socket.emit('newUser', { username: nick });
+    } else {
+        openModal();
     }
 }
 
@@ -185,6 +217,7 @@ function openModal() {
             });
         },
         open: function (d) {
+            modalOpen = true;
             var self = this;
             self.container = d.container[0];
             d.overlay.fadeIn('slow', function () {
@@ -215,8 +248,10 @@ function openModal() {
                 500,
                 function () {
                 self.close(); // or $.modal.close();
+                modalOpen = false;
             }
-);
+
+        );
             $('#m').focus();
         }
     };
