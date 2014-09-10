@@ -418,6 +418,10 @@ hr {
     padding: 5px 15px 0px 0px;
 }
 
+#row {
+margin: 25px 0px 0px 0px;
+}
+
 .playBar{
     background-color: rgba(173, 173, 173, 0.55);
     border-radius: 5px;
