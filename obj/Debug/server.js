@@ -8,8 +8,8 @@ app.use(express.static(__dirname + '/public'));
 app.get('/', function (req, res) {
     res.sendfile('index.html');
 });
-//var port = Number(process.env.PORT || 3000);
-var port = 3000;
+var port = Number(process.env.PORT || 3000);
+//var port = 3000;
 console.log("Started");
 
 var users = [];

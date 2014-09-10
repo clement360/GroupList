@@ -43,6 +43,7 @@ $(document).ready(function () {
     $('#username').focus();
     
     $('#footPlay').click(function () { footerPlay(); });
+  
 });
 
 // ----------------------------------------------------------------------------------

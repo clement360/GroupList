@@ -25,7 +25,7 @@
     <!-- Navigation Bar -->
     <div class="header">
         <div class="container">
-            <a  href="localhost:3000" class="headerLogo">
+            <a class="headerLogo">
                 <div class="logo"></div>
             </a>
             <div class="usersOnline" onclick='$("#carousel").carousel(0);'>
@@ -44,7 +44,7 @@
                     <!-- Chat Pane -->
                     <div class="container">
                         <div class="row">
-                            
+
                             <div class="col-sm-10">
 
                                 <div id="chatPanel" class="panel panel-default">
@@ -52,7 +52,7 @@
                                         <ul id="chats"></ul>
                                     </div>
                                 </div>
-                                
+
                             </div>
                             <div id="userListCol" class="col-sm-2 hidden-xs">
                                 <div id="onlineUsersPanel" class="panel panel-default">
@@ -67,7 +67,7 @@
                     <footer>
                         <div class="container">
                             <textarea id="m" placeholder="Write something..."></textarea>
-                            <input type="submit" id="submit" autocomplete="off" placeholder="Username" onclick="sendMsg();" value="Send"/>
+                            <input type="submit" id="submit" autocomplete="off" placeholder="Username" onclick="sendMsg();" value="Send" />
                         </div>
                     </footer>
                 </div>
@@ -89,7 +89,8 @@
                                 </div>
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
-                                        <h3>Group List <small class="hidden-xs">current playlist</small>
+                                        <h3>
+                                            Group List <small class="hidden-xs">current playlist</small>
                                             <button id="playGroupListBtn" disabled type="button" onclick="playGroupList();" class="btn btn-default btn-sm">
                                                 <span id="groupListIcon" class="glyphicon glyphicon-play-circle"></span>
                                             </button>
@@ -107,8 +108,8 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <div class="row">
-                                            <div class="col-xs-6"><h3>Add Songs <small>Search SoundCloud</small></h3></div>
-                                            <div class="col-xs-6 searchBox"><span id="searchDiv"><input type="text" placeholder="Search" id="search"></span></div>
+                                            <div class="col-sm-6"><h3>Add Songs <small class="hidden-xs">Search SoundCloud</small></h3></div>
+                                            <div class="col-sm-6 searchBox"><span id="searchDiv"><input type="text" placeholder="Search" id="search"></span></div>
                                         </div>
                                     </div>
                                     <div class="panel-body">

@@ -177,7 +177,7 @@ function groupListItem(track, hidden) {
                         '</a>' +
                         '<div class="media-body">' +
                             '<div class="row">' +
-                                '<div class="col-xs-10">' +
+                                '<div class="col-xs-9">' +
                                     '<h5 class="media-heading">' + track.title + '</h5>' +
                                     '<div class="groupListDescription">' +
                                         'Duration: ' + runTime(track.duration) + ' Added By: ' + track.username + 

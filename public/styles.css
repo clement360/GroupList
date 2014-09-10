@@ -116,6 +116,15 @@ body {
     font-size: 15px;
 }
 
+@media (max-width: 750px) {
+    #searchDiv-sm {
+        float: none;
+        margin-top: 15px;
+        margin-right: 5px;
+        font-size: 15px;
+    }
+}
+
 #username{
     padding-left: 10px;
     height: 30px;
@@ -407,10 +416,6 @@ hr {
 
 #GLscoreDiv{
     padding: 5px 15px 0px 0px;
-}
-
-#row{
-    margin: 25px 12px 0px 12px;
 }
 
 .playBar{
