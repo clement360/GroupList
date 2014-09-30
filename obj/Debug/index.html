@@ -24,8 +24,8 @@
 <body>
     <!-- Navigation Bar -->
     <div class="header">
-        <div class="container-fluid">
-            <a  href="localhost:3000" class="headerLogo">
+        <div class="container">
+            <a class="headerLogo">
                 <div class="logo"></div>
             </a>
             <div class="usersOnline" onclick='$("#carousel").carousel(0);'>
@@ -42,7 +42,7 @@
             <div class="carousel-inner">
                 <div id="chatPane" class="item">
                     <!-- Chat Pane -->
-                    <div class="container-fluid">
+                    <div class="container">
                         <div class="row">
 
                             <div class="col-sm-10">
@@ -65,7 +65,7 @@
                         </div>
                     </div>
                     <footer>
-                        <div class="container-fluid">
+                        <div class="container">
                             <textarea id="m" placeholder="Write something..."></textarea>
                             <input type="submit" id="submit" autocomplete="off" placeholder="Username" onclick="sendMsg();" value="Send" />
                         </div>
@@ -73,7 +73,7 @@
                 </div>
                 <div id="soundPane" class="item active">
                     <!-- Music Pane -->
-                    <div class="container-fluid">
+                    <div class="container">
                         <div id="row" class="row">
                             <div class="col-md-7">
                                 <div id="playedListPanel" class="panel panel-default" hidden>
@@ -108,8 +108,8 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <div class="row">
-                                            <div class="col-xs-6"><h3>Add Songs <small>Search SoundCloud</small></h3></div>
-                                            <div class="col-xs-6 searchBox"><span id="searchDiv"><input type="text" placeholder="Search" id="search"></span></div>
+                                            <div class="col-sm-6"><h3>Add Songs <small class="hidden-xs">Search SoundCloud</small></h3></div>
+                                            <div class="col-sm-6 searchBox"><span id="searchDiv"><input type="text" placeholder="Search" id="search"></span></div>
                                         </div>
                                     </div>
                                     <div class="panel-body">
@@ -123,7 +123,7 @@
                         </div>
                     </div>
                         <footer id="soundFooter">
-                            <div class="container-fluid">
+                            <div class="container">
                                 <div class="playBar row">
                                     <div id="footPrev" class="col-xs-1 playControl" hidden><span class="glyphicon glyphicon-step-backward"></span></div>
                                     <div class="col-xs-1 playControl"><span id="footPlay" class="glyphicon glyphicon-play"></span></div>

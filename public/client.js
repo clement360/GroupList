@@ -29,10 +29,10 @@ $(document).ready(function () {
     });
     var $Controls = $('#right, #left');
     $Controls.mouseenter(function () {
-        $(this).css("opacity", ".5");
+        $(this).css("opacity", ".9");
     });
     $Controls.mouseleave(function () {
-        $(this).css("opacity", ".05");
+        $(this).css("opacity", ".9");
     });
     
     checkCookie();

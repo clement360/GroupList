@@ -543,8 +543,8 @@ margin: 25px 0px 0px 0px;
 
 .carousel-control{
     position: fixed;
-    opacity: .3;
-    width: 30px;
+    opacity: 0.6;
+    width: 40px;
 }
 
 .carousel-control:hover, .carousel-control:focus {
