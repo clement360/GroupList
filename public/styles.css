@@ -350,6 +350,7 @@ hr {
 
 #sounds li{
     overflow: hidden;
+    padding: 15px 10px;
 }
 
 #sounds li .glyphicon {
@@ -376,12 +377,16 @@ hr {
     background-color: rgba(95, 155, 160, 0);
 }
 
-#sounds li:hover #addControl{
+#sounds li #addControl{
     opacity: 1;
 }
 
 #sounds li:nth-child(odd) #addControl {
-    color: rgba(0, 158, 82, 0.29);
+    color: rgb(151, 204, 214);
+}
+
+#sounds li:nth-child(even) #addControl {
+    color: rgb(189, 189, 189);
 }
 
 #groupList{

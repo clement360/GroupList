@@ -223,7 +223,7 @@ function playedListItem(track) {
                                         'Duration: ' + runTime(track.duration) + ' Added By: ' + track.username + 
                                     '</div>' +
                                 '</div>' +
-                                '<div id="GLscoreDiv" class="col-xs-1">' +
+                                '<div id="GLscoreDiv" class="col-xs-1 hidden-xs">' +
                                     '<div title="Track Score" class="groupListScore" id="GLscore' + track.id + '">' + track.score + '</div>' +
                                 '</div>' +
                             '</div>';
