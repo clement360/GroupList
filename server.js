@@ -2,16 +2,35 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var mongoose = require('mongoose');
+
+/*
+var MongoClient = require('mongodb').MongoClient;
+var dbString = mongodb: "mongodb://81f60fdb-c0a0-4c8d-aee9-fda4a78ec341:20108ee9-b2a2-4b1e-8cfb-e08e971633d6@23.246.199.76:10083/db";
+MongoClient.connect(dbString, function(err, db) {
+  if (!err) {
+    console.log("We are connected");
+  }
+});
+*/
 
 app.use(express.static(__dirname + '/public'));
-
 app.get('/', function (req, res) {
     res.sendfile('index.html');
 });
 var port = Number(process.env.PORT || 3000);
-//var port = 3000;
+
+http.listen(port, function () {
+    console.log('listening on *' + port);
+});
+
 console.log("Started");
 
+// database connection
+mongoose.connect('');
+
+
+// global values
 var users = [];
 var userID = 0;
 var messages = [];
@@ -122,9 +141,6 @@ io.sockets.on('connection', function (socket) {
     
 });
 
-http.listen(port, function () {
-    console.log('listening on *' + port);
-});
 
 function userIndex(id) {
     for (var r = 0; r < users.length; r++)
