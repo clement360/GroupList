@@ -12,7 +12,6 @@ socket.on('userConnection', function (data) {
 });
 
 socket.on('userDisconnection', function (data) {
-    debugger;
     users.splice(userIndex(data.username), 1);
     renderUserList();
     $('.online').text(users.length);
