@@ -2,8 +2,12 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+<<<<<<< HEAD
 var fs = require('fs');
 var mongoose = require('mongoose'); 
+=======
+var mongoose = require('mongoose');
+>>>>>>> FETCH_HEAD
 
 app.use(express.static(__dirname + '/public'));
 app.get('/', function (req, res) {
@@ -15,6 +19,7 @@ http.listen(port, function () {
     console.log('listening on *' + port);
 });
 
+<<<<<<< HEAD
 
 //load all files in models dir
 fs.readdirSync(__dirname + '/models').forEach(function(filename) {
@@ -55,6 +60,21 @@ var colors = ['#e5ed74', '#b5d4a1', '#C5AAE3','#7ba694','#308A72','#575751','#52
 
 io.sockets.on('connection', function (socket) {
 
+=======
+console.log("Started");
+
+// global values
+var users = [];
+var userID = 0;
+var messages = [];
+var messageIndex = 0;
+var colorIndex = 0;
+var groupList = [];
+var colors = ['#e5ed74', '#b5d4a1', '#C5AAE3','#7ba694','#308A72','#575751','#527ec4','#a4a4a4','#ffa897','#f77472','#fc8c6a','#fecb7f','#dbbd9b', '#decbc1', '#f2eac2'];
+
+io.sockets.on('connection', function (socket) {
+    
+>>>>>>> FETCH_HEAD
     //make this a running list later
     var usernames = [];
     for (u in users) 
@@ -114,7 +134,10 @@ io.sockets.on('connection', function (socket) {
             socket.username = data.username;
             socket.color = assignColor();
             users.push(socket);
+<<<<<<< HEAD
             var newGuy = new User({name: data.username, color: socket.color });
+=======
+>>>>>>> FETCH_HEAD
             socket.emit('newUser', { error: null, username: null, setCookie: true });
         }
         else {
@@ -126,7 +149,11 @@ io.sockets.on('connection', function (socket) {
             users[temp.index] = socket;
             socket.emit('newUser', {error: null, username: socket.username, setCookie: false});
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> FETCH_HEAD
     });
     
     socket.on('userConnected', function () {
@@ -308,6 +335,17 @@ function compareTracks(a, b) {
     return 0;
 }
 
+<<<<<<< HEAD
+=======
+// temporarily removed
+//function usernameExistsAndConnected(username) {
+//    for (u in users)
+//        if (users[u].username.toLowerCase() == username.toLowerCase() && users[u].connected)
+//            return true;
+//    return false;
+//}
+
+>>>>>>> FETCH_HEAD
 function assignColor() {
     if (colorIndex >= colors.length)
         colorIndex = 0;

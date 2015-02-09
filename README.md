@@ -1,4 +1,4 @@
 GroupList
 =========
 
-this thing I've been making
+A collaborative playlist builder
