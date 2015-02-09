@@ -6,6 +6,7 @@ var groupList = [];
 var groupListPlaying = false;
 var playedList = [];
 var marqueeID = 0;
+var currentSlide = 0;
 
 $(document).ready(function () {
     $('#soundFooter').hide();
@@ -27,29 +28,55 @@ $(document).ready(function () {
             searchSoundCloud(true);
         }
     });
-    var $Controls = $('#right, #left');
-    $Controls.mouseenter(function () {
-        $(this).css("opacity", ".9");
-    });
-    $Controls.mouseleave(function () {
-        $(this).css("opacity", ".9");
-    });
     
     checkCookie();
     
-    $('.carousel').carousel({
-        interval: false
+    // enable page sliders
+    $('#slides').superslides({"pagination":false});
+    // enable touch control of pages
+    /*$('#slides').hammer().on('swipeleft', function() {
+        $(this).superslides('animate', 'next');
     });
+    $('#slides').hammer().on('swiperight', function() {
+        $(this).superslides('animate', 'prev');
+    });*/
+
     $('#username').focus();
     
     $('#footPlay').click(function () { footerPlay(); });
-  
+    $('body').on('animating.slides', preSlide);
+    $('body').on('animated.slides', postSlide);
+    $('#soundFooter').slideUp();
+    $('#chatFooter').slideUp();
 });
+
+function preSlide() {
+    currentSlide = $('#slides').superslides('current');
+    // moving to chat
+    if (currentSlide == 0){
+        $('#soundFooter').slideUp("fast");
+        currentSlide = 1;
+    }
+
+    // moving to music
+    else{
+        $('#chatFooter').slideUp("fast");
+        currentSlide = 0;
+    }
+}
+
+function postSlide(){
+    if (currentSlide == 1){
+        $('#chatFooter').slideDown("fast");
+    }
+    else{
+        $('#soundFooter').slideDown("fast");
+    }
+}
 
 // ----------------------------------------------------------------------------------
 // -                                  Socket.on                                     -
 // ----------------------------------------------------------------------------------
-
 
 socket.on('currentGroupList', function (data) {
     if (data.length > 0) {
