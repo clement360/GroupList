@@ -32,7 +32,13 @@ $(document).ready(function () {
     checkCookie();
     
     // enable page sliders
-    $('#slides').superslides({"pagination":false});
+    $('#slides').superslides({ pagination: false });
+    // enable scrollable slides
+    $('#chatPane').css("overflow", "scroll");
+    $('#soundPane').css("overflow", "scroll");
+    $('#chatPane').css("height", "90%");
+
+
     // touch enabled sliding
     document.ontouchmove = function(e) {
         e.preventDefault();
@@ -51,6 +57,8 @@ $(document).ready(function () {
     $('body').on('animated.slides', postSlide);
     $('#soundFooter').slideUp();
     $('#chatFooter').slideUp();
+
+
 });
 
 function preSlide() {
@@ -124,8 +132,8 @@ socket.on('removeTrack', function (data) {
 // ----------------------------------------------------------------------------------
 
 SC.initialize({
-    client_id: "YOUR_CLIENT_ID",
-    redirect_uri: "http://example.com/callback.html",
+    client_id: "b99356435e69b14f1651975ac44dd458",
+    redirect_uri: 'REDIRECT_URL',
 });
 
 function searchSoundCloud(skip) {

@@ -197,7 +197,7 @@ function loadMoreMessages() {
 
 function scrollToBottom() {
     if($('.active').index() == 0)
-        $("html, body").animate({ scrollTop: $(document).height() - $(window).height() }, 500);
+        $("#chatPane").animate({ scrollTop:  $('#chatPane').height() }, 500);
 }
 
 function scrollToTop() {
@@ -211,7 +211,6 @@ function openModal() {
         init: function () {
             $("input.osx, a.osx").click(function (e) {
                 e.preventDefault();
-                
                 openModal();
             });
         },
