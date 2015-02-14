@@ -95,25 +95,6 @@
                             </div>
                         </div>
                     </div>
-                        <footer id="soundFooter">
-                            <div class="container">
-                                <div class="playBar row">
-                                    <div id="footPrev" class="col-xs-1 playControl" hidden><span class="glyphicon glyphicon-step-backward"></span></div>
-                                    <div class="col-xs-1 playControl"><span id="footPlay" class="glyphicon glyphicon-play"></span></div>
-                                    <div id="footNext" class="col-xs-1 playControl" hidden><span class="glyphicon glyphicon-step-forward"></span></div>
-                                    <div id="trackInfo" class="col-xs-9"></div>
-                                </div>
-                                <div class="positionBar row"></div>
-
-                                <!-- loading song bar -->
-                                <div class="progress row" id="loadingSongDiv" hidden>
-                                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 0%;" id="loadingSongBar">
-                                        <span class="sr-only"></span>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </footer>
                 </div>
 
                 <!-- Chat Pane -->
@@ -136,16 +117,39 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <footer id="chatFooter">
-                        <div class="container">
-                            <textarea id="m" placeholder="Write something..."></textarea>
-                            <input type="submit" id="submit" autocomplete="off" placeholder="Username" onclick="sendMsg();" value="Send" />
-                        </div>
-                    </footer>
+                    </div> 
                 </div>
             </div>
 
+            <!-- Sound Footer -->
+            <footer id="soundFooter">
+                <div class="container">
+                    <div class="playBar row">
+                        <div id="footPrev" class="col-xs-1 playControl" hidden><span class="glyphicon glyphicon-step-backward"></span></div>
+                        <div class="col-xs-1 playControl"><span id="footPlay" class="glyphicon glyphicon-play"></span></div>
+                        <div id="footNext" class="col-xs-1 playControl" hidden><span class="glyphicon glyphicon-step-forward"></span></div>
+                        <div id="trackInfo" class="col-xs-9"></div>
+                    </div>
+                    <div class="positionBar row"></div>
+
+                    <!-- loading song bar -->
+                    <div class="progress row" id="loadingSongDiv" hidden>
+                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 0%;" id="loadingSongBar">
+                            <span class="sr-only"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </footer>
+
+            <!-- Chat Footer -->
+            <footer id="chatFooter">
+                <div class="container">
+                    <textarea id="m" placeholder="Write something..."></textarea>
+                    <input type="submit" id="submit" autocomplete="off" placeholder="Username" onclick="sendMsg();" value="Send" />
+                </div>
+            </footer>
+            
             <!-- Carousel Controls -->
             <nav class="slides-navigation">
                 <a id="left" class="prev">

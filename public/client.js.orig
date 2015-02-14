@@ -32,12 +32,21 @@ $(document).ready(function () {
     checkCookie();
     
     // enable page sliders
+<<<<<<< HEAD
+    $('#slides').superslides({
+        pagination:false, 
+        slide_easing: 'easeInOutCubic',
+        slide_speed: 800,
+        scrollable: true
+    });
+=======
     $('#slides').superslides({ pagination: false });
     // enable scrollable slides
     $('#chatPane').css("overflow", "scroll");
     $('#soundPane').css("overflow", "scroll");
     $('#chatPane').css("height", "90%");
 
+>>>>>>> FETCH_HEAD
 
     // touch enabled sliding
     document.ontouchmove = function(e) {
@@ -57,6 +66,8 @@ $(document).ready(function () {
     $('body').on('animated.slides', postSlide);
     $('#soundFooter').slideUp();
     $('#chatFooter').slideUp();
+
+
 });
 
 function preSlide() {
