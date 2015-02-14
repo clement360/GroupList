@@ -32,7 +32,13 @@ $(document).ready(function () {
     checkCookie();
     
     // enable page sliders
-    $('#slides').superslides({"pagination":false});
+    $('#slides').superslides({
+        pagination:false, 
+        slide_easing: 'easeInOutCubic',
+        slide_speed: 800,
+        scrollable: true
+    });
+
     // touch enabled sliding
     document.ontouchmove = function(e) {
         e.preventDefault();

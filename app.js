@@ -30,9 +30,9 @@ app.get('/users', function (req, res) {
 });
 
 // database connection
-mongoose.connect('mongodb://localhost:27017/test');
+/*mongoose.connect('mongodb://localhost:27017/test');
 var db = mongoose.connection;
-/*db.once('open', function (callback) {
+db.once('open', function (callback) {
     var User = mongoose.model('User', userSchema);
     var silence = new User({ name: 'Silence' });
     var fluffy = new User({ name: 'fluffy' });
