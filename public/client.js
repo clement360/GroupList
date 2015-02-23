@@ -59,6 +59,12 @@ $(document).ready(function () {
 	$('#search').on('blur', function (e) {
 		preventSlide = false;
 	});
+	$('#m').on('focus', function (e) {
+		preventSlide = true;
+	});
+	$('#m').on('blur', function (e) {
+		preventSlide = false;
+	});
 	// touch enabled sliding
 	document.ontouchmove = function(e) {
 		e.preventDefault();
