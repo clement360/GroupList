@@ -49,14 +49,24 @@ $(document).ready(function () {
 	// enable scrollable slides
 	$('#chatPane').css("overflow", "scroll");
 	$('#soundPane').css("overflow", "scroll");
-	$('#chatPane').css("height", "90%");
+	$('#chatPane').css("height", "88%");
 
 	// arrow key slide navigation
 	$(document).on('keyup', arrowKeySlideControl);
+	$('#username').on('focus', function (e) {
+		preventSlide = true;
+	});
+
 	$('#search').on('focus', function (e) {
 		preventSlide = true;
 	});
 	$('#search').on('blur', function (e) {
+		preventSlide = false;
+	});
+	$('#m').on('focus', function (e) {
+		preventSlide = true;
+	});
+	$('#m').on('blur', function (e) {
 		preventSlide = false;
 	});
 	// touch enabled sliding

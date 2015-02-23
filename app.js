@@ -3,8 +3,25 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
-var mongoose = require('mongoose');
+var Cloudant = require('cloudant')
 
+var me, password;
+if (process.env.VCAP_SERVICES) {
+    var services = JSON.parse(process.env.VCAP_SERVICES);
+    me = services.cloudantNoSQLDB[0].credentials.username;
+    password = services.cloudantNoSQLDB[0].credentials.password;
+} else {
+    me = 'ab8934f8-cefb-4e8f-a24e-eff01bc48ced-bluemix';
+    password = '04dd05ed595b80e7871b053aeb6aed7a3f1b0ea6eaa1b5dfb4e1d7e9ebec94ad';
+}
+
+Cloudant({account:me, password:password}, function(err, cloudant) {
+  console.log('Connected to Cloudant')
+
+  cloudant.db.list(function(err, all_dbs) {
+    console.log('All my databases: %s', all_dbs.join(', '))
+  })
+})
 
 app.use(express.static(__dirname + '/public'));
 app.get('/', function (req, res) {
@@ -17,32 +34,6 @@ http.listen(port, function () {
 });
 
 
-//load all files in models dir
-fs.readdirSync(__dirname + '/models').forEach(function(filename) {
-  if (~filename.indexOf('.js')) require(__dirname + '/models/' + filename)
-});
-
-// mongoose schemas
-app.get('/users', function (req, res) {
-    mongoose.model('users').find(function(err, users) {
-        res.send(users);
-    });
-});
-
-// database connection
-/*mongoose.connect('mongodb://localhost:27017/test');
-var db = mongoose.connection;
-db.once('open', function (callback) {
-    var User = mongoose.model('User', userSchema);
-    var silence = new User({ name: 'Silence' });
-    var fluffy = new User({ name: 'fluffy' });
-    fluffy.save(function (err, fluffy) { if (err) return console.error(err); });
-    silence.save(function (err, silence) { if (err) return console.error(err); });
-    User.find(function (err, users) {
-        if (err) return console.error(err);
-        console.log(users);
-    })
-});*/
 
 // global values
 var users = [];
