@@ -177,6 +177,10 @@ body {
     padding:0px;
 }
 
+#chatPane {
+    height: 88%;
+}
+
 .me {
     text-align: right;
 }

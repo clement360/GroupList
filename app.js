@@ -17,32 +17,6 @@ http.listen(port, function () {
 });
 
 
-//load all files in models dir
-fs.readdirSync(__dirname + '/models').forEach(function(filename) {
-  if (~filename.indexOf('.js')) require(__dirname + '/models/' + filename)
-});
-
-// mongoose schemas
-app.get('/users', function (req, res) {
-    mongoose.model('users').find(function(err, users) {
-        res.send(users);
-    });
-});
-
-// database connection
-/*mongoose.connect('mongodb://localhost:27017/test');
-var db = mongoose.connection;
-db.once('open', function (callback) {
-    var User = mongoose.model('User', userSchema);
-    var silence = new User({ name: 'Silence' });
-    var fluffy = new User({ name: 'fluffy' });
-    fluffy.save(function (err, fluffy) { if (err) return console.error(err); });
-    silence.save(function (err, silence) { if (err) return console.error(err); });
-    User.find(function (err, users) {
-        if (err) return console.error(err);
-        console.log(users);
-    })
-});*/
 
 // global values
 var users = [];
