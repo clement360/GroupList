@@ -56,9 +56,7 @@ $(document).ready(function () {
 	$('#username').on('focus', function (e) {
 		preventSlide = true;
 	});
-	$('#username').on('blur', function (e) {
-		preventSlide = false;
-	});
+
 	$('#search').on('focus', function (e) {
 		preventSlide = true;
 	});

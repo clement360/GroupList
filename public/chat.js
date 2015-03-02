@@ -247,6 +247,7 @@ function openModal() {
                 function () {
                 self.close(); // or $.modal.close();
                 modalOpen = false;
+                preventSlide = false;
             }
 
         );
