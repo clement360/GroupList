@@ -11,8 +11,8 @@ if (process.env.VCAP_SERVICES) {
     me = services.cloudantNoSQLDB[0].credentials.username;
     password = services.cloudantNoSQLDB[0].credentials.password;
 } else {
-    me = 'ab8934f8-cefb-4e8f-a24e-eff01bc48ced-bluemix';
-    password = '04dd05ed595b80e7871b053aeb6aed7a3f1b0ea6eaa1b5dfb4e1d7e9ebec94ad';
+    me = process.env.cloudant_username;
+    password = process.env.cloudant_password;
 }
 
 Cloudant({account:me, password:password}, function(err, cloudant) {
