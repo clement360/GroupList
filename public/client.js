@@ -29,8 +29,19 @@ $(document).ready(function () {
 			sendUser();
 		}
 	});
+	$('#username').bind('blur', function () {
+			event.preventDefault();
+			sendUser();
+	});
+
 	$('#m').bind('keypress', function (e) {
 		if (e.keyCode == 13) {
+			event.preventDefault();
+			sendMsg();
+		}
+	});
+	$('#m').bind('blur', function () {
+		if ($('#m').val() != ''){
 			event.preventDefault();
 			sendMsg();
 		}
@@ -38,6 +49,12 @@ $(document).ready(function () {
 	$('#search').keydown(function (e) {
 		if (e.keyCode == 13) {
 			e.preventDefault();
+			searchSoundCloud(true);
+		}
+	});
+	$('#search').bind('blur', function () {
+		if ($('#search').val() != ''){
+			event.preventDefault();
 			searchSoundCloud(true);
 		}
 	});
