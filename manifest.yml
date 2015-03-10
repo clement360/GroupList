@@ -1,0 +1,13 @@
+---
+declared-services:
+  Cloudant-tia:
+    label: cloudantNoSQLDB
+    plan: Shared # required for cloudantNoSQLDB
+applications: 
+- name: GroupList
+  memory: 256M #The maximum memory to allocate to each application instance
+  instances: 1 #The number of instances of the application to start
+  path: . #Path to the application to be pushed
+  command: node app.js #The command to use to start the application
+  #services:
+  #- Cloudant
