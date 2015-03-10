@@ -232,7 +232,7 @@ function groupListItem(track, hidden) {
 		}  
 				item += '<div class="indexContainer pull-left"><div id="index' + track.id + '">' + index + '</div></div>' +
 						'<a class="pull-left">' +
-							'<img class="media-object" src="' + art + '" alt="">' +
+							'<img class="media-object2" src="' + art + '" alt="">' +
 						'</a>' +
 						'<div class="media-body">' +
 							'<div class="row">' +
@@ -272,7 +272,7 @@ function playedListItem(track) {
 
 	item += '<div class="indexContainer pull-left"><div id="PL-index' + track.id + '">' + index + '</div></div>' +
 						'<a class="pull-left">' +
-							'<img class="media-object" src="' + art + '" alt="">' +
+							'<img class="media-object2" src="' + art + '" alt="">' +
 						'</a>' +
 						'<div class="media-body">' +
 							'<div class="row">' +

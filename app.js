@@ -10,18 +10,19 @@ if (process.env.VCAP_SERVICES) {
     var services = JSON.parse(process.env.VCAP_SERVICES);
     me = services.cloudantNoSQLDB[0].credentials.username;
     password = services.cloudantNoSQLDB[0].credentials.password;
+    Cloudant({account:me, password:password}, function(err, cloudant) {
+    console.log('Connected to Cloudant')
+
+    cloudant.db.list(function(err, all_dbs) {
+    console.log('All my databases: %s', all_dbs.join(', '))
+  })
+})
 } else {
     me = process.env.cloudant_username;
     password = process.env.cloudant_password;
 }
 
-Cloudant({account:me, password:password}, function(err, cloudant) {
-  console.log('Connected to Cloudant')
 
-  cloudant.db.list(function(err, all_dbs) {
-    console.log('All my databases: %s', all_dbs.join(', '))
-  })
-})
 
 app.use(express.static(__dirname + '/public'));
 app.get('/', function (req, res) {

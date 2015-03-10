@@ -395,10 +395,6 @@ hr {
     list-style: none;
 }
 
-.media-object {
-    width: 50px;
-}
-
 #voteConsole{
     float: right;
     border-radius: 100px;
@@ -535,7 +531,7 @@ margin: 25px 0px 0px 0px;
     border-bottom-left-radius: 28px;
     background: rgba(0, 196, 101, 0.4); /* Old browsers */
 }
-.media.userTrack > a > .media-object{
+.media.userTrack > a > .media-object2{
     width: 70px;
 }
 
@@ -560,10 +556,6 @@ margin: 25px 0px 0px 0px;
 .slides-navigation{
     opacity: 0.6;
     font-size: 30px;
-}
-
-.carousel-control:hover, .carousel-control:focus {
-    opacity: .5;
 }
 
 /*---------------------------------------------
