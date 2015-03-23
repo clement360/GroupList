@@ -55,7 +55,6 @@
                                     <div class="panel-body">
                                         <div id="playedList" class="list-group">
                                             <!-- playedList goes here -->
-
                                         </div>
                                     </div>
                                 </div>
@@ -81,7 +80,9 @@
                                     <div class="panel-heading">
                                         <div class="row">
                                             <div class="col-sm-6"><h3>Add Songs<br> <small class="hidden-xs">Search SoundCloud</small></h3></div>
-                                            <div class="col-sm-6 searchBox textBox"><span id="searchDiv"><input type="text" placeholder="Search" id="search"></span></div>
+                                            <div class="col-sm-6 searchBox textBox">
+                                                <span id="searchDiv"><input type="text" placeholder="Search" id="search"></span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="panel-body">
@@ -168,6 +169,8 @@
                     <h3>Enter in a Username</h3>
                     <div>
                         <input type="text" placeholder="Username" id="username" autofocus>
+                        <span id="userNameButton" class="glyphicon glyphicon-circle-arrow-right"></span>
+                        
                     </div>
                     <div id="errorDiv" hidden>You need a username!</div>
                 </center>

@@ -103,6 +103,16 @@ body {
     line-height: 22px;
 }
 
+#userNameButton{
+  font-size: x-large;
+  float: right;
+  right: 95px;
+  box-shadow: 0px 3px 9px #A6A6A6;
+  padding-top: 0px;
+  top: 2px;
+  border-radius: 13px;
+}
+
 #clearLog{
     float: left;
     margin: 5px 20px 0px 0px;

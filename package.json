@@ -1,6 +1,6 @@
 {
   "name": "GroupList",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A collaborative Playlist Builder by Miguel Clement",
   "main": "server.js",
   "dependencies": {
