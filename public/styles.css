@@ -106,7 +106,7 @@ body {
 #userNameButton{
   font-size: x-large;
   float: right;
-  right: 95px;
+  right: 91px;
   box-shadow: 0px 3px 9px #A6A6A6;
   padding-top: 0px;
   top: 2px;
@@ -360,6 +360,10 @@ hr {
     color: #777;
 }
 
+#sounds{
+    margin-bottom: 3px;
+}
+
 #sounds li{
     overflow: hidden;
     padding: 15px 10px;
@@ -403,6 +407,11 @@ hr {
 
 #groupList{
     list-style: none;
+}
+
+#soundResultsRow {
+    margin-bottom: 110px;
+    margin-top: 22px;
 }
 
 #voteConsole{
